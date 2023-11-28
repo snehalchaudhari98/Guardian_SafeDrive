@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">SafeDrive_Gaurdian</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">User 1</string>
+    <string name="nav_header_subtitle">user@email.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">DM- nearby places</string>
+    <string name="menu_slideshow">DM- crime hotspot</string>
+    <string name="menu_weatherp">DM- weather prediction</string>
+    <string name="menu_drivingpattern">DM- driving pattern prediction</string>
+</resources>

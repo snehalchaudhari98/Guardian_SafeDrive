@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.safedrive_guardian.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_gallery"
+        android:name="com.example.safedrive_guardian.ui.publicplaces.PublicPlacesFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_slideshow"
+        android:name="com.example.safedrive_guardian.ui.crimehotspot.CrimeHostspotFragment"
+        android:label="@string/menu_slideshow"
+        tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/nav_weatherpred"
+        android:name="com.example.safedrive_guardian.ui.weatherp.WeatherPredFragment"
+        android:label="@string/menu_weatherp"
+        tools:layout="@layout/fragment_weather_pred" />
+
+    <fragment
+        android:id="@+id/nav_drivingpattern"
+        android:name="com.example.safedrive_guardian.ui.drivingpattern.DrivePatternFragment"
+        android:label="@string/menu_drivingpattern"
+        tools:layout="@layout/fragment_drive_pattern" />
+</navigation>
