@@ -15,4 +15,10 @@
 1. Follow steps 1-3 as per previous section
 2. Click on any of the last two buttons
 3. First click of the button fires the FCM engine and triggers a push notification after about 30 seconds
-4. Every subsequent click of the last two buttons gives push notifications which are being triggered through the Firebase Cloud Messaging API v1. 
+4. Every subsequent click of the last two buttons gives push notifications which are being triggered through the Firebase Cloud Messaging API v1.
+
+### Screenshots
+
+<img width="231" alt="image" src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/27198773/73a250cf-643b-4520-aa98-72e1651b0cab">
+
+Receiver Token Example: fCCGg74BSEGecNP7TTAR6p:APA91bGoS2uOZtFkNlsT_RDkoiNvZpftzdeNUFyJRdy9qDYxP1MP_xnoVkrikOHZ7Q0MUcRakderqdQjqvXF-KVreeTpv33f2JJMZYE9DUTXSrHBq_zm2JgPPZn5gMzj-****\*****
