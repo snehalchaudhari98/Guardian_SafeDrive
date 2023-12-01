@@ -10,6 +10,6 @@
 
 
     <color name="colorHighLevel">#D55050</color>
-    <color name="colorMediumLevel">#F4F46C</color>
+    <color name="colorMediumLevel">#ACAC00</color>
     <color name="colorLowLevel">#20AE07</color>
 </resources>

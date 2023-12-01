@@ -30,6 +30,7 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 <!--            android:text="Search"/>-->
 
         <!-- First column for TextViews -->
+
         <LinearLayout
             android:id="@+id/textColumn"
             android:layout_width="match_parent"
@@ -53,7 +54,15 @@ xmlns:android="http://schemas.android.com/apk/res/android">
                 android:layout_margin="2dp"/>
 
 
+            <Button
+                android:id="@+id/myButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Search"/>
+
+
         </LinearLayout>
+
 
 
 
@@ -63,7 +72,20 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 
 
 
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<!--    <ImageButton-->
+<!--        android:id="@+id/myButton"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@id/topBarCard"-->
+<!--        android:background="#565457"-->
+<!--        android:src="@drawable/baseline_location_searching_24"-->
+<!--        />-->
+
+
+
+
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     android:id="@+id/map"
     android:layout_below="@+id/topBarCard"

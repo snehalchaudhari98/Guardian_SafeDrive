@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,6 +78,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
     protected TextView countTextView;
     protected TextView notificationView;
     protected CardView topBarCard;
+    protected Button searchButton;
 
 
     // Radius of the Earth in kilometers
@@ -84,6 +86,10 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
     private Marker currentLocationMarker;
     private static final double LOCATION_UPDATE_FACTOR = 0.001; // Factor to update location
     private LocationCallback locationCallback;
+
+    private  int highThreshold = 10;
+    private  int mediumThreshold = 7;
+    private  int lowThreshold = 2;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -105,20 +111,11 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
             mMap = googleMap;
             getCurrentLocation();
 
-//            mMap.setMyLocationEnabled(true); // Enable the blue dot indicating user's location on the map
-
-//            mMap.setOnMyLocationButtonClickListener(() -> {
-//                // Handle the My Location button click here
-//                // You can use mMap.getMyLocation() to get the current location
-//                Log.d(TAG, "setOnMyLocationButtonClickListener: You can use mMap.getMyLocation() to get the current location");
-//                return false;
-//            });
-
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(@NonNull LatLng latLng) {
                     Log.d(TAG, "setOnMyLocationButtonClickListener: You can use mMap.getMyLocation() to get the current location");
-                    Toast.makeText(getContext(), "XXClicked on map at: " + latLng.latitude + ", " + latLng.longitude, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(), "Clicked on map at: " + latLng.latitude + ", " + latLng.longitude, Toast.LENGTH_SHORT).show();
 //                    return false;
 
 //                    getCurrentLocation();
@@ -146,31 +143,21 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
         fragmentMapsBinding = FragmentMapsBinding.inflate(inflater, container, false);
         View root = fragmentMapsBinding.getRoot();
 
-//        final TextView textView = binding.textHome;
-//        publicPlacesViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
 
 //        searchButton = fragmentMapsBinding.myButton;
         countTextView = fragmentMapsBinding.countTextView;
         notificationView = fragmentMapsBinding.notificationView;
         topBarCard = fragmentMapsBinding.topBarCard;
+        searchButton = fragmentMapsBinding.myButton;
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
 
 
-
-
-//        searchButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//
-//                handleAPIRequest();
-//
-//
-//            }
-//        });
-
-
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCurrentLocation();
+            }
+        });
 
         return root;
     }
@@ -195,15 +182,19 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
         fragmentMapsBinding = null;
     }
 
-    @SuppressLint("MissingSuperCall")
+//    @SuppressLint("MissingSuperCall")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 //        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.d(TAG, "onRequestPermissionsResult:  grantResults " +grantResults.toString() );
         switch (Request_code) {
 
             case Request_code:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "onRequestPermissionsResult: repose granted , calling getCurrentLocation "  );
                     getCurrentLocation();
+                }else{
+                    Log.d(TAG, "onRequestPermissionsResult: some other code "  );
                 }
         }
 
@@ -253,10 +244,10 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
                 plotOriginalLocation(curr_lat, curr_log);
                 if (notificationView != null){
                     String message = "";
-                    if(intersectingCount >= 10){
+                    if(intersectingCount >= highThreshold){
                         message += "Approaching highly crowded area, prepare to slow down. Exercise caution and follow safety guidelines.";
                         topBarCard.setCardBackgroundColor(Color.RED);
-                    }else if( intersectingCount < 7 && intersectingCount > 2){
+                    }else if( intersectingCount < highThreshold && intersectingCount > lowThreshold){
                         message += "Moderate density :Stay vigilant and be aware of your surroundings. ";
                         topBarCard.setCardBackgroundColor(getResources().getColor(R.color.colorMediumLevel));
                     }else{
@@ -310,11 +301,13 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
 
     private void getCurrentLocation() {
 
+        Log.d(TAG, "getCurrentLocation: ");
         // check permission first
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
         ) {
 
+            Log.d(TAG, "getCurrentLocation: ask for permission now");
             ActivityCompat.requestPermissions(requireActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, Request_code);
 
             return;
@@ -376,25 +369,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
 
                     LatLng latLng = new LatLng(curr_lat, curr_log);
 
-//                    if (currentLocationMarker == null) {
-//                        // Marker doesn't exist yet, create a new marker
-//
-//                        Log.d(TAG, "onLocationResult: Marker doesn't exist yet, create a new marker");
-//                        currentLocationMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("CurrentLocation"));
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-//                    } else {
-//                        // Marker already exists, update its position
-//                        Log.d(TAG, "onLocationResult: Marker already exists, update its position");
-//
-//                        currentLocationMarker.setPosition(latLng);
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//                    }
-
-
-
-//                    currentLocationMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("CurrentLocation"));
-//                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
 
 
                 }
@@ -427,16 +401,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
 
                     LatLng latLng = new LatLng(curr_lat, curr_log);
 
-                    // Remove the previous marker
-//                    if (currentLocationMarker != null) {
-//                        currentLocationMarker.remove();
-//                    }
-
-
-//                    currentLocationMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("CurrentLocation"));
-////                    mMap.addMarker(new MarkerOptions().position(latLng).title("CurrentLocation"));
-//                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
 
                     handleAPIRequest();
                 }
@@ -521,15 +485,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
         }
 
 //    private List<Marker> markers = new ArrayList<>(); // Keep track of markers
-
-
-//    public FetchDataOld(TextView countTextView,TextView notificationView,  double org_lat, double org_log) {
-//        this.countTextView = countTextView;
-//        this.org_lat = org_lat;
-//        this.org_log = org_log;
-//        this.notificationView = notificationView;
-//    }
-//        org_lat = curr_lat;
 
 
 
