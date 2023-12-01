@@ -37,6 +37,16 @@ Step 2: Open the project in Android Studio:
    7.  Enter the name of the city you want weather information for.
    8. Click the 'Check Weather' button to retrieve and display the weather details.
 
+## Screenshots
+<p>
+  <img src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/blob/aarushi_dhingra/ss1.png" width="200" alt="Weather App Screenshot">
+   <img src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/blob/aarushi_dhingra/ss2.png" width="200" alt="Weather App Screenshot">
+   <img src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/blob/aarushi_dhingra/ss3.png" width="200" alt="Weather App Screenshot">
+   <img src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/blob/aarushi_dhingra/ss4.png" width="200" alt="Weather App Screenshot">
+   <img src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/blob/aarushi_dhingra/ss5.png" width="200" alt="Weather App Screenshot">
+   <img src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/blob/aarushi_dhingra/ss6.png" width="200" alt="Weather App Screenshot">
+</p>
+
 Contact
 Name: Aarushi Dhingra  
 Email : adhingr6@asu.edu  
