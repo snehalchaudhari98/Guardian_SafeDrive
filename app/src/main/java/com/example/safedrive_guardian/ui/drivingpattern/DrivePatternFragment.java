@@ -59,6 +59,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
+import java.io.Console;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -225,7 +226,6 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         mainRelativeLayout = findViewById(R.id.main_layout);
         startAddressFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.startAddressAutoCompleteFragment);
-
         User_Name = "Darshan";
 
         scoreValues = new ArrayList<>();
@@ -751,8 +751,8 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         endLat = marker.getPosition().latitude;
         endLng = marker.getPosition().longitude;
 
-        Log.d("end_lat", "" + endLat);
-        Log.d("end_lng", "" + endLng);
+//        Log.d("end_lat", "" + endLat);
+//        Log.d("end_lng", "" + endLng);
         return false;
     }
 
