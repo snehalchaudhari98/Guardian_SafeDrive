@@ -46,7 +46,7 @@
 <!--            android:exported="false"-->
 <!--            android:label="@string/title_activity_maps" />-->
         <activity
-            android:name="com.example.safedrive_guardian.ui.drivingpattern.Maps"
+            android:name="com.example.safedrive_guardian.ui.drivingpattern.DrivePatternFragment"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
