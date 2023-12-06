@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    tools:context=".healthQuestions">-->
+
+<!--    &lt;!&ndash; activity_health_questions.xml &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--        xmlns:tools="http://schemas.android.com/tools"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:orientation="vertical"-->
+<!--        android:padding="16dp"-->
+<!--        tools:context=".healthQuestions">-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Personal Information"-->
+<!--            android:textSize="18sp"-->
+<!--            android:textStyle="bold"/>-->
+
+<!--        &lt;!&ndash; Gender &ndash;&gt;-->
+<!--        <RadioGroup-->
+<!--            android:id="@+id/radioGroupGender"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal">-->
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/radioButtonMale"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Male"/>-->
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/radioButtonFemale"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Female"/>-->
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/radioButtonOther"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Other"/>-->
+<!--        </RadioGroup>-->
+
+<!--        &lt;!&ndash; Age &ndash;&gt;-->
+<!--        <EditText-->
+<!--            android:id="@+id/editTextAge"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="Age"-->
+<!--            android:inputType="number"/>-->
+
+<!--        &lt;!&ndash; Weight &ndash;&gt;-->
+<!--        <EditText-->
+<!--            android:id="@+id/editTextWeight"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="Weight"-->
+<!--            android:inputType="number"/>-->
+
+<!--        &lt;!&ndash; Medical History &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Medical History"-->
+<!--            android:textSize="18sp"-->
+<!--            android:textStyle="bold"/>-->
+
+<!--        <RadioGroup-->
+<!--            android:id="@+id/radioGroupMedicalConditions"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical">-->
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/radioButtonMedicalConditionsYes"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Yes"/>-->
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/radioButtonMedicalConditionsNo"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="No"/>-->
+
+<!--        </RadioGroup>-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/editTextMedicalConditions"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="Specify Medical Conditions"-->
+<!--            android:inputType="textMultiLine"-->
+<!--            android:visibility="gone"/>-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Previous Surgeries or Medical Procedures"-->
+<!--            android:textSize="18sp"-->
+<!--            android:textStyle="bold"/>-->
+
+<!--        <RadioGroup-->
+<!--            android:id="@+id/radioGroupPreviousSurgeries"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical">-->
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/radioButtonPreviousSurgeriesYes"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Yes"/>-->
+
+<!--            <RadioButton-->
+<!--                android:id="@+id/radioButtonPreviousSurgeriesNo"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="No"/>-->
+
+<!--        </RadioGroup>-->
+
+<!--        &lt;!&ndash; Add UI components for Lifestyle and Habits, Symptoms and Concerns &ndash;&gt;-->
+
+<!--        <Button-->
+<!--            android:id="@+id/submitButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Submit"/>-->
+<!--    </LinearLayout>-->
+
+
+
+    <!-- activity_health_questions.xml -->
+<ScrollView
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".healthQuestions">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Personal Information"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+
+            <!-- Gender -->
+            <RadioGroup
+                android:id="@+id/radioGroupGender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radioButtonMale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Male"/>
+
+                <RadioButton
+                    android:id="@+id/radioButtonFemale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Female"/>
+
+                <RadioButton
+                    android:id="@+id/radioButtonOther"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Other"/>
+            </RadioGroup>
+
+    <!-- Age -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="6"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Age"
+            android:layout_weight="2"
+            android:textSize="16sp"/>
+
+        <EditText
+            android:id="@+id/editTextAge"
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="wrap_content"
+            android:hint="Enter your age"
+            android:inputType="number"
+            android:importantForAutofill="no"
+            android:maxLength="3"/>
+
+
+    </LinearLayout>
+
+    <!-- Weight -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="6"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Weight"
+            android:layout_weight="2"
+            android:textSize="16sp"/>
+        <EditText
+            android:id="@+id/editTextWeight"
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="wrap_content"
+            android:hint="Enter your weight"
+            android:inputType="numberDecimal"
+            android:importantForAutofill="no"/>
+
+    </LinearLayout>
+
+
+    <!-- Medical History -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medical History"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+    <!-- Existing Medical Conditions -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Do you have any existing medical conditions?"
+        android:textSize="16sp"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupMedicalConditions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioButtonMedicalConditionsYes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Yes"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonMedicalConditionsNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No"/>
+    </RadioGroup>
+
+    <!-- Specify Medical Conditions -->
+    <EditText
+        android:id="@+id/editTextMedicalConditions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="If yes, please specify"
+        android:inputType="textMultiLine"
+        android:visibility="gone"/>
+
+    <!-- Previous Surgeries or Medical Procedures -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Have you had any previous surgeries or medical procedures?"
+        android:textSize="16sp"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupPreviousSurgeries"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioButtonPreviousSurgeriesYes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Yes"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonPreviousSurgeriesNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No"/>
+    </RadioGroup>
+
+    <!-- Lifestyle and Habits -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lifestyle and Habits"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Dietary Habits -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="How would you describe your dietary habits?"
+        android:textSize="16sp"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupDietaryHabits"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioButtonHealthy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Healthy"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonModerate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Moderate"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonUnhealthy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Unhealthy"/>
+    </RadioGroup>
+
+    <!-- Physical Activity -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="How often do you engage in physical activity?"
+        android:textSize="16sp"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupPhysicalActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioButtonDaily"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Daily"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonFewTimesAWeek"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Few times a week"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonRarely"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rarely"/>
+    </RadioGroup>
+
+    <!-- Sleep Duration -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="How many hours of sleep do you typically get per night?"
+        android:textSize="16sp"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupSleepDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioButtonLessThan6Hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Less than 6 hours"/>
+
+        <RadioButton
+            android:id="@+id/radioButton6to8Hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6-8 hours"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonMoreThan8Hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="More than 8 hours"/>
+    </RadioGroup>
+
+    <!-- Alcohol Consumption -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="How often do you consume alcoholic beverages?"
+        android:textSize="16sp"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupAlcoholConsumption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioButtonNever"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Never"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonOccasionally"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Occasionally"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonRegularly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Regularly"/>
+    </RadioGroup>
+
+    <!-- Symptoms and Concerns -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Symptoms and Concerns"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Health Symptoms -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Are you currently experiencing any health symptoms?"
+        android:textSize="16sp"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupHealthSymptoms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioButtonHealthSymptomsYes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Yes"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonHealthSymptomsNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No"/>
+    </RadioGroup>
+
+    <!-- Describe Health Symptoms -->
+    <EditText
+        android:id="@+id/editTextHealthSymptoms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="If yes, please describe"
+        android:inputType="textMultiLine"
+        android:visibility="gone"/>
+
+    <!-- Submit Button -->
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:layout_marginTop="16dp"/>
+</LinearLayout>
+</ScrollView>
