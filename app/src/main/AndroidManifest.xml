@@ -15,6 +15,26 @@
 
 
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <queries>
+
+        <!-- Camera -->
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+            <data android:mimeType="image/*" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -69,6 +89,8 @@
         <activity
             android:name="com.example.safedrive_guardian.ui.crimehotspot.CrimeHostspotFragment">
         </activity>
+        <activity android:name=".ui.home.object.DriverDrowsinessDetectionActivity"
+            android:screenOrientation="userPortrait" />
     </application>
 
 </manifest>
