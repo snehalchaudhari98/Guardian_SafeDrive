@@ -142,4 +142,43 @@ tools:context=".ui.drivingpattern.DrivePatternFragment">
         android:textColor="@android:color/background_light"
         android:textSize="18sp"
         android:visibility="gone" />
+
+
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/topBarCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:background="#F1ECF8"
+        app:cardCornerRadius="8dp"
+        android:visibility="gone"
+        app:cardElevation="16dp">
+
+        <LinearLayout
+            android:id="@+id/textColumn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/notificationView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Crowdness will be displayed "
+                android:textSize="18sp"
+                android:layout_margin="2dp"/>
+
+            <TextView
+                android:id="@+id/countTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Counts will be displayed here"
+                android:textSize="12sp"
+                android:layout_margin="2dp"/>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 </RelativeLayout>

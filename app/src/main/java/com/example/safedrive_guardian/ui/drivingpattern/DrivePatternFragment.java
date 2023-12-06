@@ -1,12 +1,17 @@
 package com.example.safedrive_guardian.ui.drivingpattern;
 
+import static java.security.AccessController.getContext;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -16,12 +21,19 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings;
 
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
+import com.example.safedrive_guardian.ui.publicplaces.DownloadUrl;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.Priority;
 
 import androidx.core.content.ContextCompat;
@@ -49,10 +61,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -61,6 +77,8 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 
 import java.io.Console;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -78,13 +96,17 @@ import android.os.Bundle;
 import com.example.safedrive_guardian.R;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class DrivePatternFragment extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMarkerDragListener,
-        SensorEventListener{
+        SensorEventListener {
     private Button searchBtn, dirBtn, startBtn, backBtn;
     private EditText searchFld;
     private TextView txtSpeedLimit, txtCurrentSpeed;
@@ -206,12 +228,39 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     TextView drivingScore;
     int speedLimitInMph;
     double overallSafeScore = 0;
-    double averageScore =0;
+    double averageScore = 0;
     double previousScore = 0;
     List<Double> scoreValues;
     ScoreArray scoreArrayList;
     RelativeLayout mainRelativeLayout;
     AutocompleteSupportFragment startAddressFragment;
+
+
+    /**     sc -variable declaration - start    **/
+    private String TAG = "APP: MapsActivity";
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private static final int Request_code = 101;
+    protected double curr_lat, curr_log;
+    private double prev_lat = Integer.MAX_VALUE, prev_log = Integer.MAX_VALUE;
+    private String location_types = "school|hospital|park";
+    private String search_radius = "1000";// in meter
+    private double updated_radius = (1000 / 1000) / 2.0;// in meter
+    private double btest_buff = 0.05;
+    private int scaler = 1;
+    protected TextView countTextView;
+    protected TextView notificationView;
+    protected CardView topBarCard;
+//    protected Button searchButton;
+    private static final double EARTH_RADIUS = 6371;
+    private Marker currentLocationMarker;
+    private static final double LOCATION_UPDATE_FACTOR = 0.001; // Factor to update location
+    private LocationCallback locationCallback;
+    private int highThreshold = 10;
+    private int mediumThreshold = 7;
+    private int lowThreshold = 2;
+
+    /**    sc -variable declaration - end **/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -227,6 +276,15 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         startAddressFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.startAddressAutoCompleteFragment);
         User_Name = "Darshan";
+
+        countTextView = findViewById(R.id.countTextView);
+        notificationView = findViewById(R.id.notificationView);
+        topBarCard = findViewById(R.id.topBarCard);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+
+
+
 
         scoreValues = new ArrayList<>();
         Places.initialize(getApplicationContext(), "AIzaSyBJ7iTZYsaNhmO9NvvCQvv6xcxyBLXd054");
@@ -296,6 +354,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         fuseTimer.scheduleAtFixedRate(new ResetSensorValues(), 1000, 30000);
     }
 
+
     // initializing the sensors
     public void initListeners() {
         sensorManager.registerListener(this,
@@ -316,6 +375,11 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         if (location.isEmpty()) {
             Toast.makeText(this, "\"Cannot be blank\"", Toast.LENGTH_SHORT).show();
         } else {
+
+            changeVisibility();
+//            changeSearchFragmentVisibility();
+
+
             if (i == 0) {
                 startBtn.setText("END");
                 timeStart = System.currentTimeMillis();
@@ -338,6 +402,9 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 backBtn.setVisibility(View.VISIBLE);
                 txtCurrentSpeed.setVisibility(View.VISIBLE);
                 txtSpeedLimit.setVisibility(View.VISIBLE);
+
+                topBarCard.setVisibility(View.VISIBLE);
+
             } else {
                 startBtn.setText("START");
                 timeEnd = System.currentTimeMillis();
@@ -359,11 +426,10 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 details.clear();
                 scoreArrayList = new ScoreArray(scoreValues);
                 averageScore = scoreArrayList.getAverage();
-                double result = Math.round(averageScore *100)/100.0;
+                double result = Math.round(averageScore * 100) / 100.0;
                 if (result >= 5) {
                     Toast.makeText(getApplicationContext(), "Good Driving, Trip Score: " + result, Toast.LENGTH_LONG).show();
-                }
-                else{
+                } else {
                     Toast.makeText(getApplicationContext(), "Poor Driving, Trip Score: " + result, Toast.LENGTH_LONG).show();
                 }
                 onadd();
@@ -485,6 +551,21 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
 
         gMap.setOnMarkerDragListener(this);
         gMap.setOnMarkerClickListener(this);
+
+
+        getCurrentLocation();
+
+//        gMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+//            @Override
+//            public void onMapClick(@NonNull LatLng latLng) {
+//                Log.d(TAG, "setOnMyLocationButtonClickListener: You can use mMap.getMyLocation() to get the current location");
+//
+//                handleAPIRequest(latLng.latitude, latLng.longitude);
+//            }
+//
+//        });
+
+
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -501,7 +582,8 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
 
         switch (v.getId()) {
             case R.id.Btnsearch: {
-                gMap.clear();
+//                gMap.clear(); // verify this once !!!
+                handleAPIRequest(false);
                 List<Address> addressList = null;
                 MarkerOptions markerOptions = new MarkerOptions();
                 Log.d("location = ", location);
@@ -523,6 +605,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                         gMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                         endLat = myAddress.getLatitude();
                         endLng = myAddress.getLongitude();
+                        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                     }
 
                 }
@@ -530,6 +613,11 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
             break;
 
             case R.id.Btnto:
+                /** sc - add cardview **/
+                changeVisibility();
+//                changeSearchFragmentVisibility(); // use other views
+                /** sc - add cardview **/
+
                 dataTransfer = new Object[3];
                 String url = getDirectionsUrl();
                 GetDirData getDirectionsData = new GetDirData();
@@ -543,8 +631,51 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 dataTransfer[2] = new LatLng(endLat, endLng);
                 getDirectionsData.execute(dataTransfer);
                 break;
+
         }
     }
+
+    private void changeVisibility(){
+
+//        int visibility = topBarCard.getVisibility();
+//
+//        if (visibility == View.VISIBLE) {
+//
+//            Log.d(TAG, "changeVisibility: topBarCard is visible ");
+//            topBarCard.setVisibility(View.INVISIBLE);
+//        } else {
+//
+//            Log.d(TAG, "changeVisibility: topBarCard is invisible ");
+//            topBarCard.setVisibility(View.VISIBLE);
+//        }
+    }
+
+    private void changeSearchFragmentVisibility(){
+
+//        View fragmentView = startAddressFragment.getView();
+//        if (fragmentView != null) {
+//            int visibility = fragmentView.getVisibility();
+//
+//            if (visibility == View.VISIBLE) {
+//                Log.d(TAG, "changeSearchFragmentVisibility: startAddressFragment is visible ");
+//                View searchView = startAddressFragment.getView();
+//                if (searchView != null) {
+//                    Log.d(TAG, "changeSearchFragmentVisibility: startAddressFragment making it invisible ");
+//                    searchView.setVisibility(View.GONE);
+//                }
+//            } else {
+//                Log.d(TAG, "changeSearchFragmentVisibility: startAddressFragment is NOT visible ");
+//                View searchView = startAddressFragment.getView();
+//                if (searchView != null) {
+//                    Log.d(TAG, "changeSearchFragmentVisibility: startAddressFragment making it visible ");
+//                    searchView.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        }
+
+    }
+
+
 
     private String getDirectionsUrl() {
 
@@ -569,12 +700,12 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     public void onConnected(Bundle bundle) {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setFastestInterval(60000);
         mLocationRequest.setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY);
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this); // this is duplicate !!!!
         }
     }
 
@@ -593,6 +724,8 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     public void onLocationChanged(final Location location) {
         Log.d("onLocationChanged", "entered");
 
+        publicPLacesChangesOnCallback(location);
+
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
@@ -610,7 +743,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         markerOptions.position(latLng);
         markerOptions.draggable(true);
         markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         mCurrLocationMarker = gMap.addMarker(markerOptions);
 
         //move map camera
@@ -669,6 +802,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     }
 
     public void back(View view) {
+        topBarCard.setVisibility(View.GONE);
         searchBtn.setVisibility(View.VISIBLE);
         dirBtn.setVisibility(View.VISIBLE);
         View fragmentView = startAddressFragment.getView();
@@ -685,6 +819,8 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         gMap.stopAnimation();
         gMap.clear();
         startAddressFragment.setText("");
+
+
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -733,6 +869,9 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                             buildGoogleApiClient();
                         }
                         gMap.setMyLocationEnabled(true);
+
+                        Log.d(TAG, "onRequestPermissionsResult: repose granted , calling getCurrentLocation ");
+                        getCurrentLocation();
                     }
 
                 } else {
@@ -1293,4 +1432,547 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         });
         player.start();
     }
+
+    /** sc - code start  **/
+    private void handleAPIRequest() {
+        handleAPIRequest(curr_lat, curr_log, true);
+    }
+
+    private void handleAPIRequest(boolean focus) {
+        handleAPIRequest(curr_lat, curr_log, focus);
+    }
+
+    private void handleAPIRequest(double xlat, double xlog) {
+        handleAPIRequest(xlat, xlog, true);
+    }
+    private void handleAPIRequest(double xlat, double xlog, boolean focus) {
+        Log.d(TAG, "handleAPIRequest: ihandleAPIRequest ");
+        // Remove existing markers before adding new ones
+        gMap.clear(); // check this for Mukul's integration!!!
+
+
+        FetchData hospitalData = fetchAndDisplayPlaces("hospital", xlat, xlog, focus);
+        FetchData schoolData = fetchAndDisplayPlaces("school", xlat, xlog, focus);
+        FetchData parkData = fetchAndDisplayPlaces("park", xlat, xlog, focus);
+//                fetchAndDisplayPlaces("park");
+
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                if (countTextView != null) {
+                    String countText = String.format("In your vicinity, there are %d hospitals, %d schools, and %d parks.", hospitalData.getHospitalCount(), schoolData.getSchoolCount(), parkData.getParkCount());
+                    countTextView.setText(countText);
+                }
+
+
+//                String countText = String.format("In your vicinity, there are %d hospitals, %d schools, and %d parks.", hospitalData.getHospitalCount(), schoolData.getSchoolCount(), parkData.getParkCount());
+//                Toast.makeText(getApplicationContext(), countText, Toast.LENGTH_LONG).show();
+
+
+                // Your function to be executed after 5 seconds
+                int intersectingCount = hospitalData.getIntersectingCount() + schoolData.getIntersectingCount() + parkData.getIntersectingCount();
+                Log.d(TAG, "handleAPIRequest: intersectingCount: " + intersectingCount);
+
+
+//                plotOriginalLocation(curr_lat, curr_log);
+                if (notificationView != null) {
+                    String message = "";
+                    if (intersectingCount >= highThreshold) {
+                        message += "Approaching highly crowded area, prepare to slow down. Exercise caution and follow safety guidelines.";
+                        topBarCard.setCardBackgroundColor(Color.RED);
+                    } else if (intersectingCount < highThreshold && intersectingCount > lowThreshold) {
+                        message += "Moderate density :Stay vigilant and be aware of your surroundings. ";
+                        topBarCard.setCardBackgroundColor(getResources().getColor(R.color.colorMediumLevel));
+                    } else {
+                        message += " Low Density : Drive safely, exercise normal precautions and enjoy your surroundings.";
+                        topBarCard.setCardBackgroundColor(getResources().getColor(R.color.colorLowLevel));
+                    }
+
+                    notificationView.setText(message);
+
+//                    plotOriginalLocation(xlat, xlog);
+
+
+                    // Set background color based on the level
+
+                }
+
+            }
+        }, 3000);
+    }
+
+
+    private FetchData fetchAndDisplayPlaces(String placeType) {
+        return fetchAndDisplayPlaces(placeType, curr_lat, curr_log, true);
+    }
+
+    private FetchData fetchAndDisplayPlaces(String placeType, double lat, double log, boolean focus) {
+        StringBuilder stringBuilder = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        stringBuilder.append("location=" + lat + "," + log);
+//        stringBuilder.append("location=" + curr_lat + "," + curr_log);
+        stringBuilder.append("&radius=" + search_radius);
+        stringBuilder.append("&type=" + placeType);
+        stringBuilder.append("&sensor=true");
+        stringBuilder.append("&key=" + getResources().getString(R.string.google_maps_key));
+
+        String url = stringBuilder.toString();
+        Object dataFetch[] = new Object[2];
+
+        dataFetch[0] = gMap;
+        dataFetch[1] = url;
+
+        Log.d(TAG, "onClick: url " + url);
+
+        FetchData fetchData = new FetchData(placeType,  focus);
+        fetchData.execute(dataFetch);
+
+
+        return fetchData;
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getCurrentLocation() {
+
+        Log.d(TAG, "getCurrentLocation: ");
+        // check permission first
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            ) {
+
+                Log.d(TAG, "getCurrentLocation: ask for permission now");
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, Request_code);
+
+                return;
+            }
+
+
+        Log.d(TAG, "getCurrentLocation: as we have permission now");
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(6000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        //        locationRequest.setFastestInterval(5000);
+        locationRequest.setFastestInterval(60000);
+
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                //                super.onLocationResult(locationResult);
+                //                Toast.makeText(getApplicationContext(), " Location result is = "+locationResult., Toast.LENGTH_LONG).show();
+
+                if (locationResult == null) {
+                    Toast.makeText(getApplicationContext(), " Current location is null", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Log.d(TAG, "onLocationResult: length "+ locationResult.getLocations().size());
+
+
+                for (Location location : locationResult.getLocations()) {
+
+                    if (location != null) {
+                        Toast.makeText(getApplicationContext(), " Current location is " + location.getLatitude() + " - " + location.getLongitude(), Toast.LENGTH_LONG).show();
+                    }
+
+                    //
+                    //                    curr_lat += LOCATION_UPDATE_FACTOR;
+                    //                    curr_log += LOCATION_UPDATE_FACTOR;
+
+
+                    // Calculate distance
+                    double distance = calculateDistance(prev_lat, prev_log, curr_lat, curr_log);
+
+                    // Print the result
+                    System.out.println("Distance: " + distance + " km");
+                    Log.d(TAG, "onLocationResult: Distance: " + distance + " km" + "updated_radius " + updated_radius + " curr_lat : " + curr_lat + " curr_log " + curr_log);
+
+                    if (distance >= updated_radius) {
+                        prev_lat = curr_lat;
+                        prev_log = curr_log;
+                        Log.d(TAG, "onLocationResult: FETCH NEW PLACES : ");
+                        //                        fetchAndDisplayPlaces("hospital");
+                        //                        fetchAndDisplayPlaces("school");
+
+                        handleAPIRequest();
+
+                        if (currentLocationMarker != null) {
+                            currentLocationMarker.remove();
+                        }
+                    }
+
+                    LatLng latLng = new LatLng(curr_lat, curr_log);
+
+
+                }
+            }
+        };
+
+
+
+//        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+            Task<Location> task = fusedLocationProviderClient.getLastLocation();
+            task.addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+
+                    scaler += 1;
+
+                    if (location != null) {
+                        curr_lat = location.getLatitude();
+                        curr_log = location.getLongitude();
+                        Log.d(TAG, "addOnSuccessListener: curr_lat: " + curr_lat + " curr_log");
+
+
+                        if (prev_log == Integer.MAX_VALUE) {
+                            prev_log = curr_log;
+                        }
+
+                        if (prev_lat == Integer.MAX_VALUE) {
+                            prev_lat = curr_lat;
+                        }
+
+
+                        LatLng latLng = new LatLng(curr_lat, curr_log);
+
+
+                        handleAPIRequest();
+                    }
+
+                }
+            });
+
+
+        }
+
+        public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+            // Convert latitude and longitude from degrees to radians
+            lat1 = Math.toRadians(lat1);
+            lon1 = Math.toRadians(lon1);
+            lat2 = Math.toRadians(lat2);
+            lon2 = Math.toRadians(lon2);
+
+            // Calculate differences
+            double dLat = lat2 - lat1;
+            double dLon = lon2 - lon1;
+
+            // Haversine formula
+            double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                    + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            // Calculate distance
+            return EARTH_RADIUS * c;
+        }
+
+
+
+        private void plotOriginalLocation(double org_lat, double org_log){
+
+            LatLng latLng =  new LatLng(org_lat, org_log);
+
+            gMap.addMarker(new MarkerOptions().position(latLng).title("CurrentLocation"));
+            gMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+
+
+    //        currentLocationMarker.setPosition(latLng);
+        }
+
+        private void publicPLacesChangesOnCallback(Location location ){
+            if (location != null) {
+                Toast.makeText(getApplicationContext(), " Current location is " + location.getLatitude() + " - " + location.getLongitude(), Toast.LENGTH_LONG).show();
+            }
+
+            //
+            //                    curr_lat += LOCATION_UPDATE_FACTOR;
+            //                    curr_log += LOCATION_UPDATE_FACTOR;
+
+
+            // Calculate distance
+            double distance = calculateDistance(prev_lat, prev_log, curr_lat, curr_log);
+
+            // Print the result
+            System.out.println("Distance: " + distance + " km");
+            Log.d(TAG, "publicPLacesChangesOnCallback: Distance: " + distance + " km" + "updated_radius " + updated_radius + " curr_lat : " + curr_lat + " curr_log " + curr_log);
+
+            if (distance >= updated_radius) {
+                prev_lat = curr_lat;
+                prev_log = curr_log;
+                Log.d(TAG, "publicPLacesChangesOnCallback: FETCH NEW PLACES : ");
+                //                        fetchAndDisplayPlaces("hospital");
+                //                        fetchAndDisplayPlaces("school");
+
+                handleAPIRequest();
+
+                if (currentLocationMarker != null) {
+                    currentLocationMarker.remove();
+                }
+            }
+
+            LatLng latLng = new LatLng(curr_lat, curr_log);
+        }
+
+
+    /** sc - code end  **/
+
+
+class FetchData extends AsyncTask<Object, String, String> {
+    String googleNearByPlacesData;
+
+    GoogleMap googleMap;
+
+    String url;
+
+
+    private static final double EARTH_RADIUS = 6371;
+
+    private String TAG = "APP: FetchDataOld";
+    private int marker_radius = 350;
+
+    private int hospitalCount = 0;
+    private int schoolCount = 0;
+    private int parkCount = 0;
+    private  double org_lat = curr_lat;
+    private  double org_log = curr_log;
+    private int intersectingCount = 0;
+    private String type = "";
+    private boolean markerFocus = true;
+
+    public int getHospitalCount() {
+        return hospitalCount;
+    }
+
+    public int getSchoolCount() {
+        return schoolCount;
+    }
+
+
+    public int getParkCount() {
+        return parkCount;
+    }
+
+    public FetchData(String type, boolean markerFocus) {
+        this.type = type;
+        this.markerFocus =markerFocus;
+    }
+
+//    private List<Marker> markers = new ArrayList<>(); // Keep track of markers
+
+
+
+    @Override
+    protected String doInBackground(Object... objects) {
+
+
+        googleMap = (GoogleMap) objects[0];
+        url = (String) objects[1];
+        DownloadUrl downloadUrl = new DownloadUrl();
+        try {
+            googleNearByPlacesData = downloadUrl.retriveUrl(url);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return googleNearByPlacesData;
+    }
+
+
+
+
+
+    @Override
+    protected void onPostExecute(String s) {
+//        super.onPostExecute(s);
+
+        // Remove existing markers before adding new ones
+//            googleMap.clear();
+//        plotOriginalLocation();
+
+
+
+
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(s);
+
+            JSONArray jsonArray = jsonObject.getJSONArray("results");
+            Log.d(TAG, "onPostExecute:  jsonArray : "+jsonArray);
+
+            for(int i= 0; i < jsonArray.length(); i++){
+                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                JSONObject getLocation = jsonObject1.getJSONObject("geometry").getJSONObject("location");
+                Log.d(TAG, "onPostExecute: getLocation :"+getLocation);
+
+                String lat = getLocation.getString("lat");
+                String lng = getLocation.getString("lng");
+
+                JSONObject getName = jsonArray.getJSONObject(i);
+                String name = getName.getString("name");
+
+
+
+//                    String rating = jsonObject1.getString("rating");
+
+
+                LatLng latLng = new LatLng(Double.parseDouble(lat) , Double.parseDouble(lng));
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.title(name);
+                markerOptions.position(latLng);
+                markerOptions.alpha(0.9F);
+                markerOptions.draggable(true);
+
+                if(jsonObject1.has("vicinity")){
+                    String vicinity = jsonObject1.getString("vicinity");
+                    markerOptions.snippet("vicinity : " + vicinity);
+                }
+
+                if(jsonObject1.has("rating")){
+                    String rating = jsonObject1.getString("rating");
+                    markerOptions.snippet("rating : " + rating);
+                }
+
+
+                markerOptions.infoWindowAnchor(0.5f, 0.5f);
+                markerOptions.zIndex(1);
+
+
+
+                // Set marker icon based on the type of place
+                JSONArray typesArray = jsonObject1.getJSONArray("types");
+                if (typesArray.length() > 0) {
+                    String placeType = typesArray.getString(0); // Get the first type
+                    setMarkerIcon(markerOptions, placeType,   jsonObject1.optString("icon", ""));
+
+                    // Increment the count for each type
+                    switch (placeType) {
+                        case "hospital":
+                            hospitalCount++;
+                            break;
+                        case "school":
+                            schoolCount++;
+                            break;
+                        case "park":
+                            parkCount++;
+                            break;
+                    }
+
+                }
+
+                Marker marker= googleMap.addMarker(markerOptions);
+                if(  this.markerFocus == true){
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                }
+
+                // Draw a circle around the place with a radius of 1 km
+                drawCircle(marker.getPosition());
+
+                // Display the counts
+//                    displayPlaceCounts();
+
+
+
+            }
+
+
+
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
+    private void displayPlaceCounts() {
+//        if (countTextView != null) {
+//            String countText = "Hospitals: " + hospitalCount + " Schools: " + schoolCount + " Parks: " + parkCount;
+//            countTextView.setText(countText);
+//        }
+
+
+    }
+
+    public int getIntersectingCount(){
+        return intersectingCount;
+    }
+
+
+    private void setMarkerIcon(MarkerOptions markerOptions, String placeType, String iconUrl) {
+        Log.d(TAG, "setMarkerIcon:  placeType "+placeType);
+//        if (iconUrl != null && !iconUrl.isEmpty()) {
+//            new AsyncTask<String, Void, BitmapDescriptor>() {
+//                @Override
+//                protected BitmapDescriptor doInBackground(String... urls) {
+//                    return getBitmapDescriptorFromUrl(urls[0]);
+//                }
+//
+//                @Override
+//                protected void onPostExecute(BitmapDescriptor result) {
+//                    // Set the bitmap as a marker icon on the UI thread
+//                    markerOptions.icon(result);
+//                }
+//            }.execute(iconUrl);
+//        } else {
+        switch (placeType) {
+            case "hospital":
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+
+                break;
+            case "school":
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+                break;
+            case "park":
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                break;
+            // Add more cases for other types as needed
+            default:
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                break;
+        }
+//        }
+
+    }
+
+
+
+    private void drawCircle(LatLng currentPlace) {
+        CircleOptions circleOptions = new CircleOptions()
+                .center(currentPlace)
+                .radius(marker_radius) // Radius in meters (1 km)
+                .strokeWidth(2) // Width of the circle's outline
+                .strokeColor(Color.BLUE) // Color of the circle's outline
+                .fillColor(Color.parseColor("#302327e8")); // Color of the circle's fill (with transparency)
+//                .fillColor(Color.parseColor("#300000FF")); // Color of the circle's fill (with transparency)
+//                .fillColor(Color.parseColor("#300000FF")); // Color of the circle's fill (with transparency)
+
+        googleMap.addCircle(circleOptions);
+
+
+        double distance = calculateDistance(
+                currentPlace.latitude, currentPlace.longitude,
+                org_lat,org_log);
+
+        if (distance <= marker_radius) {
+            intersectingCount++;
+        }
+
+    }
+
+
+
+    private BitmapDescriptor getBitmapDescriptorFromUrl(String url) {
+        try {
+            InputStream inputStream = new URL(url).openStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            return BitmapDescriptorFactory.fromBitmap(bitmap);
+        } catch (IOException e) {
+            return BitmapDescriptorFactory.defaultMarker(); // Default marker if there's an error
+        }
+    }
+}
+
+
 }
