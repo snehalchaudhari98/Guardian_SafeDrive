@@ -3,6 +3,7 @@ package com.example.safedrive_guardian;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -13,6 +14,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import android.content.Intent;
 
 public class signUpActivity extends AppCompatActivity {
@@ -74,6 +77,14 @@ public class signUpActivity extends AppCompatActivity {
                                             // Handle the error
                                         }
                                     });
+                                    FirebaseMessaging.getInstance().getToken()
+                                        .addOnCompleteListener(mTask -> {
+                                            if (mTask.isSuccessful()) {
+                                                String token = mTask.getResult();
+                                                databaseReference.child("users").child(currentUser.getUid()).child("fcmtoken").setValue(token);
+                                                Log.d("FCM", "FCM Token: " + token);
+                                            }
+                                        });
                                 }
 
                                 Toast.makeText(getApplicationContext(), "User registered successfully", Toast.LENGTH_SHORT).show();
