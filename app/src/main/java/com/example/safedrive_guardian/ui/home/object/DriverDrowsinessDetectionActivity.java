@@ -15,6 +15,6 @@ public class DriverDrowsinessDetectionActivity extends MLVideoHelperActivity {
 
     @Override
     protected void setProcessor() {
-        cameraSource.setMachineLearningFrameProcessor(new FaceDetectorProcessor(this));
+        cameraSource.setMachineLearningFrameProcessor(new FaceDetectorProcessor(this, DriverDrowsinessDetectionActivity.this));
     }
 }
