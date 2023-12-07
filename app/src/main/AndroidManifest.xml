@@ -15,6 +15,30 @@
 
 
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <queries>
+
+        <!-- Camera -->
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+            <data android:mimeType="image/*" />
+        </intent>
+    </queries>
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -25,6 +49,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SafeDrive_Gaurdian"
         tools:targetApi="31">
+        <service
+            android:name=".services.FirebaseCloudMessagingService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".services.NotificationService"
+            android:enabled="true"
+            android:exported="true" />
+
 
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
@@ -84,6 +121,8 @@
         <activity
             android:name="com.example.safedrive_guardian.ui.crimehotspot.CrimeHostspotFragment">
         </activity>
+        <activity android:name=".ui.home.object.DriverDrowsinessDetectionActivity"
+            android:screenOrientation="userPortrait" />
     </application>
 
 </manifest>
