@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class loginActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
@@ -27,6 +29,16 @@ public class loginActivity extends AppCompatActivity {
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+
+        // TODO: Add this logically into the database
+//        FirebaseMessaging.getInstance().getToken()
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful()) {
+//                        String token = task.getResult();
+//                        this.token = token;
+//                        Log.d("FCM", "FCM Token: " + token);
+//                    }
+//                });
 
         findViewById(R.id.signinbutton).setOnClickListener(view -> {
             String email = ((EditText) findViewById(R.id.signinemail)).getText().toString();
