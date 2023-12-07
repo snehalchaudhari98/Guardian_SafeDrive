@@ -536,6 +536,8 @@ public class Maps extends AppCompatActivity implements OnMapReadyCallback,
                 dataTransfer[2] = new LatLng(endLat, endLng);
                 getDirectionsData.execute(dataTransfer);
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + v.getId());
         }
     }
 
