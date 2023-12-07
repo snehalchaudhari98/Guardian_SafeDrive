@@ -20,7 +20,7 @@ public class WeatherPredViewModel extends ViewModel {
 
     public WeatherPredViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is weather fragment");
+        mText.setValue("Please Wait... Fetching your Location and Weather!");
     }
 
     public LiveData<String> getText() {
@@ -48,11 +48,11 @@ public class WeatherPredViewModel extends ViewModel {
 
                     String weatherStatus;
                     if (temperature > 30) {
-                        weatherStatus = "It's hot outside.";
+                        weatherStatus = "For " + city + ", it's hot outside.";
                     } else if (temperature < 10) {
-                        weatherStatus = "It's cold outside.";
+                        weatherStatus = "For " + city + ", it's cold outside.";
                     } else {
-                        weatherStatus = "The temperature is moderate.";
+                        weatherStatus = "For " + city + ", the temperature is moderate.";
                     }
 
                     if (generalCondition.equalsIgnoreCase("Rain") || generalCondition.equalsIgnoreCase("Snow")) {
@@ -61,7 +61,7 @@ public class WeatherPredViewModel extends ViewModel {
 
                     mText.postValue(weatherStatus);
                 } else {
-                    mText.postValue("Error fetching weather data");
+                    mText.postValue("Error fetching weather data for " + city);
                 }
             }
 
