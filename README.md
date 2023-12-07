@@ -1,54 +1,57 @@
-# Android Weather Prediction App
+## Overview
 
-## Project Overview
-This Android application provides real-time weather predictions for cities worldwide. Utilizing the OpenWeather API, the app offers an easy-to-use interface for users to obtain up-to-date weather information.
+## Usage Instructions
 
-### Features
-- Fetch and display real-time weather information for a specified city.
-- Easy-to-use interface for city selection.
-- Displays weather data like temperature, humidity, and general weather conditions.
+### 1. Launching the App
 
-## Tech Stack
-- **Language:** Java
-- **UI Framework:** Android SDK
-- **Networking:** Retrofit, Gson
-- **API:** OpenWeather API
-- **IDE:** Android Studio
+- Open the application on your Android device.
 
-## Getting Started
+### 2. Select Driving Pattern Prediction
 
-### Prerequisites
-- Android Studio
-- JDK (Java Development Kit)
-- Android Emulator or Device
-- OpenWeather API key
+- From the home page, open the navigation drawer.
+- Select "Driving Pattern Prediction."
+- ![WhatsApp Image 2023-11-30 at 22 10 01_853df098](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/4431a4f2-0550-426c-b393-ba7b83507e6b)
 
-### Installation
-Step 1. **Clone the repository:**  
-   `git clone https://github.com/snehalchaudhari98/Guardian_SafeDrive.git`   
-   <br>
-Step 2: Open the project in Android Studio: 
-   1. Launch Android Studio.  
-   2. Select 'Open an Existing Project' and navigate to the cloned directory.  
-   3. Build -> Make Project
-   4. Select an emulator or connect your Android device.
-   5. Run the app by clicking the 'Run' button in Android Studio.
-   6. Navigate to the left drawer  which shows all the functionalities and click on the DM-Weather Prediction Option
-   7.  Enter the name of the city you want weather information for.
-   8. Click the 'Check Weather' button to retrieve and display the weather details.
+### 3. Start a New Trip
 
-## Screenshots
-<p>
-  <img src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/blob/aarushi_dhingra/ss1.png" width="200" alt="Weather App Screenshot">
-   <img src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/blob/aarushi_dhingra/ss2.png" width="200" alt="Weather App Screenshot">
-   <img src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/blob/aarushi_dhingra/ss3.png" width="200" alt="Weather App Screenshot">
-   <img src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/blob/aarushi_dhingra/ss4.png" width="200" alt="Weather App Screenshot">
-   <img src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/blob/aarushi_dhingra/ss5.png" width="200" alt="Weather App Screenshot">
-   <img src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/blob/aarushi_dhingra/ss6.png" width="200" alt="Weather App Screenshot">
-</p>
+- Inside the "Driving Pattern Prediction" section, choose "New Trip."
+- ![WhatsApp Image 2023-11-30 at 22 10 01_8f55cc1c](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/e31363d8-42c5-4abc-b588-0a6ae063e016)
 
-Contact
-Name: Aarushi Dhingra  
-Email : adhingr6@asu.edu  
-Project Link: https://github.com/snehalchaudhari98/Guardian_SafeDrive.git
+### 4. Locate Yourself
 
+- Click on the center button located at the top right to automatically locate yourself on the map.
+- ![WhatsApp Image 2023-11-30 at 22 10 00_1986aa98](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/4456a110-3f48-41b1-ad5e-303516f89510)
+
+### 5. Enter Destination Address
+
+- Enter the destination address in the provided field.
+
+### 6. Search and Directions
+
+- Select "Search and Directions" to find the best route to your destination.
+- ![WhatsApp Image 2023-11-30 at 22 10 00_28d28b22](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/aca08251-9118-4504-b212-889f9156190e)
+
+### 7. Start Now
+
+- Initiate your trip by clicking on "Start Now."
+- The application will now monitor driving patterns, including speed, acceleration, brakes, turning angles.
+
+### 8. Monitoring Scores
+
+- The score will update every 2 seconds, reflecting your driving behavior.
+- Watch for notifications regarding over-speeding, hard acceleration, harsh brakes, and other driving patterns.
+- ![WhatsApp Image 2023-11-30 at 22 10 00_50e3cb65](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/d1335a01-29a5-4e6e-b3f8-9ed1cab55110)
+
+### 9. End Trip
+
+- When you reach your destination, click on "End" to conclude the trip.
+
+### 10. View Trip Summary
+
+- The application will display the average score for the entire trip.
+- ![WhatsApp Image 2023-11-30 at 22 10 00_570171d2](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/0e13c1e5-7447-46fa-b332-815615b6f1b6)
+
+### 11. Start New Destination
+
+- Navigate back and start a new trip by selecting "Back" and choosing "New Destination."
+- ![WhatsApp Image 2023-11-30 at 22 10 00_1203ac06](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/fe6f7cf9-e7fc-4eea-9087-85f75eb38958)
