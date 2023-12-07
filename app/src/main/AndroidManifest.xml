@@ -83,7 +83,7 @@
 <!--            android:exported="false"-->
 <!--            android:label="@string/title_activity_maps" />-->
         <activity
-            android:name="com.example.safedrive_guardian.ui.drivingpattern.Maps"
+            android:name="com.example.safedrive_guardian.ui.drivingpattern.DrivePatternFragment"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -92,6 +92,21 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBJ7iTZYsaNhmO9NvvCQvv6xcxyBLXd054" />
+        <activity
+            android:name=".healthQuestions"
+            android:exported="false" />
+        <activity
+            android:name=".signUpActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".loginActivity"
+            android:exported="false"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"

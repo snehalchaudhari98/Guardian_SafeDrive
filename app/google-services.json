@@ -1,13 +1,17 @@
 {
   "project_info": {
-    "project_number": "502182734004",
-    "project_id": "safe-drive-guardian",
-    "storage_bucket": "safe-drive-guardian.appspot.com"
+    "project_number": "972145280513",
+    "project_id": "safedrive-gaurdian",
+    "storage_bucket": "safedrive-gaurdian.appspot.com"
+//    "project_number": "502182734004",
+//    "project_id": "safe-drive-guardian",
+//    "storage_bucket": "safe-drive-guardian.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:502182734004:android:1547d9b020a3fe240fcfe1",
+        "mobilesdk_app_id": "1:972145280513:android:b69ac3196679988e43e200",
+//        "mobilesdk_app_id": "1:502182734004:android:1547d9b020a3fe240fcfe1",
         "android_client_info": {
           "package_name": "com.example.safedrive_guardian"
         }
@@ -15,7 +19,8 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB_baQ1ZKTS158hjPqriCqoePNEr3Cy-DA"
+          "current_key": "AIzaSyDTcZqUoYUULQg60_-EIclO9wy2hSUYnkI"
+//          "current_key": "AIzaSyB_baQ1ZKTS158hjPqriCqoePNEr3Cy-DA"
         }
       ],
       "services": {

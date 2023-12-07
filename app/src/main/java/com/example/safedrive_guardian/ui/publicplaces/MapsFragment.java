@@ -229,7 +229,6 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
             @Override
             public void run() {
 
-
                 if (countTextView != null) {
                     String countText = String.format("In your vicinity, there are %d hospitals, %d schools, and %d parks.", hospitalData.getHospitalCount(), schoolData.getSchoolCount(), parkData.getParkCount());
                     countTextView.setText(countText);
@@ -693,4 +692,8 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMapClickListen
             }
         }
     }
+
+
+
+    
 }
