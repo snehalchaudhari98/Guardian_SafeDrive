@@ -16,12 +16,17 @@
 
 package com.example.safedrive_guardian.ui.home.helpers.vision;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.PointF;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.safedrive_guardian.services.NotificationService;
+import com.example.safedrive_guardian.ui.drivingpattern.DrivePatternFragment;
+import com.example.safedrive_guardian.ui.home.HomeFragment;
+import com.example.safedrive_guardian.ui.home.object.DriverDrowsinessDetectionActivity;
 import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
@@ -40,11 +45,16 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
     private static final String TAG = "FaceDetectorProcessor";
 
     private final FaceDetector detector;
-
+    NotificationService notificationService;
+    Context context1;
+    private final Activity activity;
     private final HashMap<Integer, FaceDrowsiness> drowsinessHashMap = new HashMap<>();
-
-    public FaceDetectorProcessor(Context context) {
+    private int drowsyCount;
+    private long lastDrowsyTimestamp;
+    public FaceDetectorProcessor(Context context, Activity activity) {
         super(context);
+        this.activity = activity;
+        context1 = context;
         FaceDetectorOptions faceDetectorOptions = new FaceDetectorOptions.Builder()
                 .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
                 .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
@@ -68,6 +78,11 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
 
     @Override
     protected void onSuccess(@NonNull List<Face> faces, @NonNull GraphicOverlay graphicOverlay) {
+        if(context1 != null)
+        {
+            notificationService = new NotificationService(context1);
+        }
+
         for (Face face : faces) {
             FaceDrowsiness faceDrowsiness = drowsinessHashMap.get(face.getTrackingId());
             if (faceDrowsiness == null) {
@@ -75,11 +90,39 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
                 drowsinessHashMap.put(face.getTrackingId(), faceDrowsiness);
             }
             boolean isDrowsy = faceDrowsiness.isDrowsy(face);
+            if (isDrowsy) {
+                drowsyCount++;
+                Log.d("Drowsiness", String.valueOf(drowsyCount));
+                // Update the timestamp when isDrowsy becomes true
+                setLastDrowsyTimestamp(System.currentTimeMillis());
+            }
+
+            // Check if isDrowsy has been true 5 times within a minute
+            if (drowsyCount >= 100 &&
+                    System.currentTimeMillis() - getLastDrowsyTimestamp() <= 10 * 1000) {
+                notificationService.sendNotification("Drowsy","You are Sleepy!! Take a Break!!", activity);
+                Log.d("Drowsiness", "Drowsiness detected 5 times in a minute!");
+                // Reset the count
+                resetDrowsyCount();
+            }
             graphicOverlay.add(new FaceGraphic(graphicOverlay, face, isDrowsy));
             logExtrasForTesting(face);
         }
     }
+    public int getDrowsyCount() {
+        return drowsyCount;
+    }
 
+    public long getLastDrowsyTimestamp() {
+        return lastDrowsyTimestamp;
+    }
+    public void setLastDrowsyTimestamp(long timestamp) {
+        lastDrowsyTimestamp = timestamp;
+    }
+
+    public void resetDrowsyCount() {
+        drowsyCount = 0;
+    }
     private static void logExtrasForTesting(Face face) {
         if (face != null) {
             Log.v(MANUAL_TESTING_LOG, "face bounding box: " + face.getBoundingBox().flattenToString());
