@@ -104,11 +104,19 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import android.os.Bundle;
 
 import com.example.safedrive_guardian.R;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -275,6 +283,17 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     private int mediumThreshold = 7;
     private int lowThreshold = 2;
 
+
+    private DatabaseReference databaseReference;
+    private FirebaseAuth mAuth;
+
+//    protected int tripHospitalCnt;
+//    protected int tripParksCnt;
+//    protected int tripSchoolCnt;
+
+    private AtomicInteger tripHospitalCnt = new AtomicInteger(0);
+    private AtomicInteger tripSchoolCnt = new AtomicInteger(0);
+    private AtomicInteger tripParksCnt = new AtomicInteger(0);
     /**
      * sc -variable declaration - end
      **/
@@ -283,6 +302,10 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_drive_pattern);
+
+
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        mAuth =  FirebaseAuth.getInstance();
         dirBtn = findViewById(R.id.Btnto);
         searchBtn = findViewById(R.id.Btnsearch);
         startBtn = findViewById(R.id.Btnstart);
@@ -307,6 +330,10 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         PlacesClient placesClient = Places.createClient(this);
         startAddressFragment.getView().setBackgroundColor(Color.WHITE);
         startAddressFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS));
+
+
+
+
         startAddressFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
@@ -415,6 +442,10 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 txtSpeedLimit.setVisibility(View.VISIBLE);
 
                 topBarCard.setVisibility(View.VISIBLE);
+//                tripHospitalCnt = 0;
+//                tripSchoolCnt =0;
+//                tripParksCnt = 0;
+
 
             } else {
                 startBtn.setText("START");
@@ -445,8 +476,64 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                     notificationService.sendNotification("Poor Driving", "Trip Score: " + result, DrivePatternFragment.this);
                     Toast.makeText(getApplicationContext(), "Poor Driving, Trip Score: " + result, Toast.LENGTH_LONG).show();
                 }
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+//                if (currentfbUser != null) {
+//                    Log.d("App", "started: ");
+//                    DatabaseReference lastScoreRef = databaseReference.child("users").child(currentfbUser.getUid()).child("driveStat").child("lastDrivingScore");
+//                    lastScoreRef.setValue(result);
+//
+//                    DatabaseReference tripHospitalCntRef = databaseReference.child("users").child(currentfbUser.getUid()).child("driveStat").child("tripHospitalCnt");
+//                    tripHospitalCntRef.setValue(tripHospitalCnt);
+//
+//
+//                    DatabaseReference tripSchoolCntRef = databaseReference.child("users").child(currentfbUser.getUid()).child("driveStat").child("tripSchoolCnt");
+//                    tripSchoolCntRef.setValue(tripSchoolCnt);
+//
+//                    DatabaseReference tripParksCntRef = databaseReference.child("users").child(currentfbUser.getUid()).child("driveStat").child("tripParksCntScore");
+//                    tripParksCntRef.setValue(tripSchoolCnt);
+//
+//
+//                    DatabaseReference destinationRef = databaseReference.child("users").child(currentfbUser.getUid()).child("driveStat").child("lastDestination");
+//                    destinationRef.setValue(location);
+//
+//
+//                }
+
+                if (currentUser != null) {
+                    Log.d("App", "currentUser: "+currentUser);
+                    databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            Log.d("App", "started: add data");
+
+
+                            Log.d(TAG, "publicPLacesChangesOnCallback: tripParksCnt: " + tripParksCnt.get()+ " tripHospitalCnt :" +tripHospitalCnt.get()+ " tripSchoolCnt :" +tripSchoolCnt.get());
+
+
+
+                            databaseReference.child("users").child(currentUser.getUid()).child("driveStat").child("lastDrivingScore").setValue(result);
+                            databaseReference.child("users").child(currentUser.getUid()).child("driveStat").child("tripHospitalCnt").setValue(tripHospitalCnt.get()/2);
+                            databaseReference.child("users").child(currentUser.getUid()).child("driveStat").child("tripSchoolCnt").setValue(tripSchoolCnt.get()/2);
+                            databaseReference.child("users").child(currentUser.getUid()).child("driveStat").child("tripParksCntScore").setValue(tripSchoolCnt.get()/2);
+                            databaseReference.child("users").child(currentUser.getUid()).child("driveStat").child("lastDestination").setValue(location);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+                            // Handle the error
+                        }
+                    });
+                }
+//
+//                tripHospitalCnt = 0;
+//                tripSchoolCnt =0;
+//                tripParksCnt = 0;
                 onadd();
             }
+
+            tripParksCnt.addAndGet(0);
+            tripHospitalCnt.addAndGet(0);
+            tripSchoolCnt.addAndGet(0);
 
         }
 
@@ -1528,6 +1615,8 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
 //                fetchAndDisplayPlaces("park");
 
 
+
+
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -1537,6 +1626,15 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                     String countText = String.format("In your vicinity, there are %d hospitals, %d schools, and %d parks.", hospitalData.getHospitalCount(), schoolData.getSchoolCount(), parkData.getParkCount());
                     countTextView.setText(countText);
                 }
+//                tripParksCnt += parkData.getParkCount();
+//                tripHospitalCnt += hospitalData.getHospitalCount();
+//                tripSchoolCnt += schoolData.getSchoolCount();
+
+                tripParksCnt.addAndGet(parkData.getParkCount());
+                tripHospitalCnt.addAndGet(hospitalData.getHospitalCount());
+                tripSchoolCnt.addAndGet(schoolData.getSchoolCount());
+
+                Log.d(TAG, "handleAPIRequest: tripParksCnt: " + tripParksCnt+ " tripHospitalCnt :" +tripHospitalCnt+ " tripSchoolCnt :" +tripSchoolCnt);
 
 
 //                String countText = String.format("In your vicinity, there are %d hospitals, %d schools, and %d parks.", hospitalData.getHospitalCount(), schoolData.getSchoolCount(), parkData.getParkCount());
@@ -1643,13 +1741,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 Log.d(TAG, "onLocationResult: length "+ locationResult.getLocations().size());
 
 
-                for (Location location : locationResult.getLocations()) {
-
-                    if (location != null) {
-                        Toast.makeText(getApplicationContext(), " Current location is " + location.getLatitude() + " - " + location.getLongitude(), Toast.LENGTH_LONG).show();
-                    }
-
-                    //
+                for (Location location : locationResult.getLocations()) {//
                     //                    curr_lat += LOCATION_UPDATE_FACTOR;
                     //                    curr_log += LOCATION_UPDATE_FACTOR;
 
@@ -1674,9 +1766,6 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                             currentLocationMarker.remove();
                         }
                     }
-
-                    LatLng latLng = new LatLng(curr_lat, curr_log);
-
 
                 }
             }
@@ -1709,6 +1798,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
 
                         LatLng latLng = new LatLng(curr_lat, curr_log);
 
+                        Log.d(TAG, "fusedLocationProviderClient: tripParksCnt: " + tripParksCnt+ " tripHospitalCnt :" +tripHospitalCnt+ " tripSchoolCnt :" +tripSchoolCnt);
 
                         handleAPIRequest();
                     }
@@ -1754,9 +1844,9 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         }
 
         private void publicPLacesChangesOnCallback(Location location ){
-            if (location != null) {
-                Toast.makeText(getApplicationContext(), " Current location is " + location.getLatitude() + " - " + location.getLongitude(), Toast.LENGTH_LONG).show();
-            }
+//            if (location != null) {
+//                Toast.makeText(getApplicationContext(), " Current location is " + location.getLatitude() + " - " + location.getLongitude(), Toast.LENGTH_LONG).show();
+//            }
 
             //
             //                    curr_lat += LOCATION_UPDATE_FACTOR;
@@ -1778,6 +1868,9 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 //                        fetchAndDisplayPlaces("school");
 
                 handleAPIRequest();
+
+                Log.d(TAG, "publicPLacesChangesOnCallback: tripParksCnt: " + tripParksCnt+ " tripHospitalCnt :" +tripHospitalCnt+ " tripSchoolCnt :" +tripSchoolCnt);
+
 
                 if (currentLocationMarker != null) {
                     currentLocationMarker.remove();

@@ -6,21 +6,21 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_action_name"
             android:title="@string/menu_home" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_public_places_foreground"
-            android:title="@string/menu_gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+<!--        <item-->
+<!--            android:id="@+id/nav_gallery"-->
+<!--            android:icon="@drawable/ic_public_places_foreground"-->
+<!--            android:title="@string/menu_gallery" />-->
+<!--        <item-->
+<!--            android:id="@+id/nav_slideshow"-->
+<!--            android:icon="@drawable/ic_menu_slideshow"-->
+<!--            android:title="@string/menu_slideshow" />-->
 
-        <item
-            android:id="@+id/nav_weatherpred"
-            android:icon="@drawable/ic_menu_weatherp"
-            android:title="@string/menu_weatherp" />
+<!--        <item-->
+<!--            android:id="@+id/nav_weatherpred"-->
+<!--            android:icon="@drawable/ic_menu_weatherp"-->
+<!--            android:title="@string/menu_weatherp" />-->
 
 
         <item
