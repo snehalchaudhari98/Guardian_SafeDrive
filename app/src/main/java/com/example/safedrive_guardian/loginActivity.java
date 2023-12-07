@@ -30,16 +30,6 @@ public class loginActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
-        // TODO: Add this logically into the database
-//        FirebaseMessaging.getInstance().getToken()
-//                .addOnCompleteListener(task -> {
-//                    if (task.isSuccessful()) {
-//                        String token = task.getResult();
-//                        this.token = token;
-//                        Log.d("FCM", "FCM Token: " + token);
-//                    }
-//                });
-
         findViewById(R.id.signinbutton).setOnClickListener(view -> {
             String email = ((EditText) findViewById(R.id.signinemail)).getText().toString();
             String password = ((EditText) findViewById(R.id.signinpassword)).getText().toString();

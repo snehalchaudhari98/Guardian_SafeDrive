@@ -85,6 +85,9 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.BufferedReader;
 import java.io.Console;
@@ -109,6 +112,10 @@ import android.os.Bundle;
 
 import com.example.safedrive_guardian.R;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -157,6 +164,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     long timeBreakStart, timeBreakEnd;
     float tmpSpeed = 0;
     NotificationService notificationService;
+    private DatabaseReference databaseReference;
     // sensor variables
     // for gryo
     public static final float TOLERANCE = 0.000000001f;
@@ -248,6 +256,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     ScoreArray scoreArrayList;
     RelativeLayout mainRelativeLayout;
     AutocompleteSupportFragment startAddressFragment;
+    private FirebaseAuth mAuth;
 
 
     /**
@@ -274,6 +283,11 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     private int highThreshold = 10;
     private int mediumThreshold = 7;
     private int lowThreshold = 2;
+    private String fcmToken = "";
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
 
     /**
      * sc -variable declaration - end
@@ -363,6 +377,32 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         // analysing behavior every 2 sec
         fuseTimer.scheduleAtFixedRate(new BehaviorAnalysis(), 1000, 2000);
         fuseTimer.scheduleAtFixedRate(new ResetSensorValues(), 1000, 30000);
+
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        String uid = currentUser.getUid();
+
+        // Reference to the user's data in the database
+        DatabaseReference userRef = databaseReference.child("users").child(uid);
+
+        userRef.child("fcmtoken").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String fcmtoken = dataSnapshot.getValue(String.class);
+                    DrivePatternFragment.this.setFcmToken(fcmToken);
+                    Log.d("FCM Token", "Token: " + fcmtoken);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle any errors that might occur
+                Log.w("FCM Token", "Error fetching token", databaseError.toException());
+            }
+        });
+
     }
 
 
@@ -439,9 +479,11 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 averageScore = scoreArrayList.getAverage();
                 double result = Math.round(averageScore * 100) / 100.0;
                 if (result >= 5) {
+                    notificationService.sendFCMMessage("Good Driving", "Trip Score: " + result, this.fcmToken);
                     notificationService.sendNotification("Good Driving", "Trip Score: " + result, DrivePatternFragment.this);
                     Toast.makeText(getApplicationContext(), "Good Driving, Trip Score: " + result, Toast.LENGTH_LONG).show();
                 } else {
+                    notificationService.sendFCMMessage("Poor Driving", "Trip Score: " + result, this.fcmToken);
                     notificationService.sendNotification("Poor Driving", "Trip Score: " + result, DrivePatternFragment.this);
                     Toast.makeText(getApplicationContext(), "Poor Driving, Trip Score: " + result, Toast.LENGTH_LONG).show();
                 }
@@ -1374,6 +1416,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 if (currentSpeed > speedLimit) {
                     factorSpeed = 10;
                     runOnUiThread(() -> {
+                        notificationService.sendFCMMessage("You speed is above the limit","Please drive within the speedlimit", DrivePatternFragment.this.fcmToken);
                         notificationService.sendNotification("You speed is above the limit","Please drive within the speedlimit", DrivePatternFragment.this);
                         Snackbar.make(mainRelativeLayout, "You speed is above the limit, please drive within the speedlimit", Snackbar.LENGTH_SHORT).show();
                         playSound();
@@ -1385,6 +1428,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 if (areBrakesApplied) {
                     factorBrakes = 10;
                     runOnUiThread(() -> {
+                        notificationService.sendFCMMessage("Please be careful","You shouldn't apply sudden brakes", DrivePatternFragment.this.fcmToken);
                         notificationService.sendNotification("Please be careful","You shouldn't apply sudden brakes", DrivePatternFragment.this);
                         Snackbar.make(mainRelativeLayout, "You shouldn't apply sudden brakes, please be careful", Snackbar.LENGTH_SHORT).show();
                         playSound();

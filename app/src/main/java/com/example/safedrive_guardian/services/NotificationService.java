@@ -34,11 +34,8 @@ public class NotificationService {
     private Context context;
 
 
-    // TODO: Change this access token by getting the token Snehal's FCM application
-    private String accessToken = "ya29.c.c0AY_VpZhx-mCR4H0gWwENZ9URisQRkY6Pd8MqgwvVIeY-_yDIA6FAlxRAqK3cyjtIcWZk1dqrIkpeOu0EqtZcIOardhE3o1pITXPYbvr3w7-nG-EkB6rj7q3pY05Z8UuGt59zeQByqwrqRP2h5nWp0wVcFEbQyYG3bRrrDQA4nwfdq8kM3YU4q7SYQYB0NNde01vb6dEMAIdRL1lDZ3FoQB9a1eu6x0vaDE6UFtTFQYvek0T_--dAAqpf6jVuBGuc82xwB9LmWSWOe8Y8OIgfxUFTnFYihgeTsNqvgceO8kqWjEqDXS-PI3OxbltHczOWzKeuYaRWVjoAMpc3x7uKTgoohkYZdycHm9teqyVcbndmEU9W33VVgzANH385Ctw5bBJ9jsi6B9_0e1uiMu_6Razr9ed_aU45VMhFtlvxwqz1UzIYWJvI3mMSaZXvWM-f61gUoe2V4I4Obv42l9p5BU7vZBUnpZd3gXj7r1uIcFFgQpB2pmm4s4d64By3XQUqYBtM0-t8XXk49Y_94z6yRlqiccemm9JFI5B73Qq13ysvmy5R6_lR95mQZ0XcJ6l6X-v8_0X2Vf4SySeWSo8wXWF343qrWeukpV8WlY7rsrb9vVh8donmO5jFrW1vurxpgasI021MskQWnhu4ryo2fm1yoc5pmZh47MeVoxOkX4pY4_Iqhjj_ziiIF2l9QyI93e658MlvBJ2OBudwzgmd3BiSinSQgFBjk5neQwocgwyS3kndw_Wts4eQBipkku4MedQQBo7J0V3I1dBsSbVRr-zVWi21v1rR5VW2XMxziBQF7s5Fygz8vFpVshUUsO1nyeRuR6x9XgFfvaV3fhO8lV0S9YW00sW9rIeujp14bsZ-ao9tMZ4Jxzc4O-vwqXB_Xb4sQu5X5-_x95qr6ck4vcYo_2wdsgVUh9zFtxU7ixn6xeB5_0Stimx9BZxJr7t3m2QOJwZ22VFvvR9Isfr8dQRpixgpxmjuVWqq6_enOQoy2Mzvf8v7zjW";
-
-    // Not same as accessToken, this is the unique FCM token for the device
-    private String fcmToken = "";
+    // Snehal's FCM Token
+    private String accessToken = "ya29.c.c0AY_VpZg1FG4LNbUiOQr3zAM8dMuxWmoQQGxglL-naNDx9jdk5Ho-wezbTt3N-J2yBeFNHRUwvQIl9iUpp9iscbWn46UJgrdVME6Jl2HmfDWtO5boBjmWsG3GD4C26XwuzEpPu6HEbVNsQqa7AWYZ--Yn5BSkL4P7XLRNxzMk1bO_3tfHD1bzLnEwLruqyU4vhfwutkhsitTj2cYjiZbxqx0X_Spj1XOLSSnVDrQzOd-dPk6T5G9TXdd53iuq6BpsBrePjC-y9FKF8LF_fEfc7nU9BeVI-IFC3v6njhcMVGNyHf5ERRWMo3JdFPjOG4GOGLI-Gu38YvkE05BhibZZ8nMIKikzJKQ25n-Mb6uCkuCwju_CRaGfLsfqL385KYnxMyOIIpyB8ciSqo9d4zshtzswO0Xo5xwckQVBMSap9fcl9J2UZgQ5dq_Bhpx05kU9_O4392RuoxJSdortWQtZoqOJdrinb2ahMr7S8ojOUbucBfeZmo2qoQqm9S04xiMqJlrwzwO1U0ZhkXYdum5yXxIa5suxXcuRFfih1UqYwtiRhnr-oIlvi-7any6jqzIujXxrMo7gtZn6hY6sF163gsJp6JuaOddBkaBV8sQ3SuJ8uSaWW08QcFlJ5adx3mO-gbrs6qMFnyFjIv4B77sOcidiarIYxjl11UVZO6fdVpalp39n7bftey4ZM00RhV4fqS7nQW2snZi7yrnytrIry56VBr3l2ntuirRJOM58l9pl6J28wdwyBmZcppw2IcepaYgfasZ67ikQ3ktBWbBmmh-1V5nv8Venmr8xdmRnehy41QziehI1j1Jcieqc_XsoU-jr0bR3fVR-qQ10p81l0BeObV15z7dbOwYx63JBIloXbFrv4ffejyIy04UI7rmY4xi9YFvwqOl_hIa2iJqrWUgcZMgc6wp1F4RqyOeZ0_sk1JZRSn6Iu4ZvX-R2v5RXm_RdoQ6WJixo_WQ48c9Fz6ggtrujz5QvWQ1mFo9hgxJo6RIXI8uI7ga";
 
 
     public NotificationService(Context context) {
@@ -67,7 +64,7 @@ public class NotificationService {
             }
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.nav_notifications) // replace with your notification icon
+                .setSmallIcon(R.drawable.nav_notifications)
                 .setContentTitle(title)
                 .setContentText(content)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
@@ -76,7 +73,8 @@ public class NotificationService {
         notificationManager.notify(getUniqueNotificationId(), builder.build());
     }
 
-    private void sendFCMMessage(String NotifTitle, String NotifBody, String receiverFcmToken) {
+    public void sendFCMMessage(String NotifTitle, String NotifBody, String receiverFcmToken) {
+        Log.d("FCM Token NS:", receiverFcmToken);
         new Thread(() -> {
             OkHttpClient client = new OkHttpClient();
             try {
