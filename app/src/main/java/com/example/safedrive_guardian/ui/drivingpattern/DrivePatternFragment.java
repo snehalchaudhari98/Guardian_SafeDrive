@@ -29,6 +29,13 @@ import android.provider.Settings;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.safedrive_guardian.services.NotificationService;
 import com.example.safedrive_guardian.ui.publicplaces.DownloadUrl;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -79,9 +86,12 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
+import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -146,7 +156,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     private int countSuddenBreaks = 0;
     long timeBreakStart, timeBreakEnd;
     float tmpSpeed = 0;
-
+    NotificationService notificationService;
     // sensor variables
     // for gryo
     public static final float TOLERANCE = 0.000000001f;
@@ -240,7 +250,9 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     AutocompleteSupportFragment startAddressFragment;
 
 
-    /**     sc -variable declaration - start    **/
+    /**
+     * sc -variable declaration - start
+     **/
     private String TAG = "APP: MapsActivity";
     private FusedLocationProviderClient fusedLocationProviderClient;
     private static final int Request_code = 101;
@@ -254,7 +266,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     protected TextView countTextView;
     protected TextView notificationView;
     protected CardView topBarCard;
-//    protected Button searchButton;
+    //    protected Button searchButton;
     private static final double EARTH_RADIUS = 6371;
     private Marker currentLocationMarker;
     private static final double LOCATION_UPDATE_FACTOR = 0.001; // Factor to update location
@@ -263,7 +275,9 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     private int mediumThreshold = 7;
     private int lowThreshold = 2;
 
-    /**    sc -variable declaration - end **/
+    /**
+     * sc -variable declaration - end
+     **/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -284,10 +298,8 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         countTextView = findViewById(R.id.countTextView);
         notificationView = findViewById(R.id.notificationView);
         topBarCard = findViewById(R.id.topBarCard);
-
+        notificationService = new NotificationService(getApplicationContext());
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-
-
 
 
         scoreValues = new ArrayList<>();
@@ -306,12 +318,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 // Handle any errors
             }
         });
-        startBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                started(view);
-            }
-        });
+        startBtn.setOnClickListener(view -> started(view));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -432,8 +439,10 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 averageScore = scoreArrayList.getAverage();
                 double result = Math.round(averageScore * 100) / 100.0;
                 if (result >= 5) {
+                    notificationService.sendNotification("Good Driving", "Trip Score: " + result, DrivePatternFragment.this);
                     Toast.makeText(getApplicationContext(), "Good Driving, Trip Score: " + result, Toast.LENGTH_LONG).show();
                 } else {
+                    notificationService.sendNotification("Poor Driving", "Trip Score: " + result, DrivePatternFragment.this);
                     Toast.makeText(getApplicationContext(), "Poor Driving, Trip Score: " + result, Toast.LENGTH_LONG).show();
                 }
                 onadd();
@@ -639,7 +648,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         }
     }
 
-    private void changeVisibility(){
+    private void changeVisibility() {
 
 //        int visibility = topBarCard.getVisibility();
 //
@@ -654,7 +663,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
 //        }
     }
 
-    private void changeSearchFragmentVisibility(){
+    private void changeSearchFragmentVisibility() {
 
 //        View fragmentView = startAddressFragment.getView();
 //        if (fragmentView != null) {
@@ -678,7 +687,6 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
 //        }
 
     }
-
 
 
     private String getDirectionsUrl() {
@@ -724,6 +732,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         return Double.parseDouble(twoDForm.format(d));
     }
 
+    @SuppressLint("LongLogTag")
     @Override
     public void onLocationChanged(final Location location) {
         Log.d("onLocationChanged", "entered");
@@ -755,6 +764,55 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
             gMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             gMap.animateCamera(CameraUpdateFactory.zoomTo(17));
         }
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        String apiKey = "ee87a5fce22b560ffb1c20b877e78ced";
+        String apiUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + location.getLatitude() + "&lon=" + location.getLongitude() + "&appid=" + apiKey;
+
+        // Create a JsonObjectRequest
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, apiUrl, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // Handle the response
+                        try {
+                            JSONObject currentWeather = response.getJSONObject("current");
+                            JSONArray weatherArray = currentWeather.getJSONArray("weather");
+                            JSONObject weatherObject = weatherArray.getJSONObject(0);
+                            String icon = weatherObject.getString("icon");
+                            RainAndSnow = icon.equals("10d") || icon.equals("13d");
+                            if (RainAndSnow) {
+                                runOnUiThread(() -> {
+                                    notificationService.sendNotification("Weather","The Weather is Rainy", DrivePatternFragment.this);
+                                    Snackbar.make(mainRelativeLayout, "The Weather is Rainy", Snackbar.LENGTH_SHORT).show();
+                                    playSound();
+                                });
+                            } else {
+                                runOnUiThread(() -> {
+                                    notificationService.sendNotification("Weather","The Weather is Sunny", DrivePatternFragment.this);
+                                    Snackbar.make(mainRelativeLayout, "The Weather is Sunny", Snackbar.LENGTH_SHORT).show();
+                                    playSound();
+                                });
+                            }
+                            Log.d("Icon", icon);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, error -> {
+                    // Handle the error
+                    Toast.makeText(DrivePatternFragment.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+
+        // Add the request to the RequestQueue
+        queue.add(jsonObjectRequest);
+// Add the request to the RequestQueue
+//        RequestQueue requestQueue = Volley.newRequestQueue(context);
+//        requestQueue.add(jsObjRequest);
+
+
         speedLimit = String.valueOf(40);
         double kph = (Double.parseDouble(speedLimit)) * 0.621;
         speedLimitInMph = (int) Math.round(kph);
@@ -1298,6 +1356,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         int factorBrakes = 0;
         int factorAcceleration = 0;
         int factorTurn = 0;
+        int factorWeather = 0;
 
         //calculate rateOverYaw and rateOverPitch by taking the division of pitch/yaw over 30 sec interval
         double rateOverPitch = accumulatedPitch / operationCount;
@@ -1315,6 +1374,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 if (currentSpeed > speedLimit) {
                     factorSpeed = 10;
                     runOnUiThread(() -> {
+                        notificationService.sendNotification("You speed is above the limit","Please drive within the speedlimit", DrivePatternFragment.this);
                         Snackbar.make(mainRelativeLayout, "You speed is above the limit, please drive within the speedlimit", Snackbar.LENGTH_SHORT).show();
                         playSound();
                     });
@@ -1325,13 +1385,18 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 if (areBrakesApplied) {
                     factorBrakes = 10;
                     runOnUiThread(() -> {
+                        notificationService.sendNotification("Please be careful","You shouldn't apply sudden brakes", DrivePatternFragment.this);
                         Snackbar.make(mainRelativeLayout, "You shouldn't apply sudden brakes, please be careful", Snackbar.LENGTH_SHORT).show();
                         playSound();
                     });
                 } else {
                     factorBrakes = 0;
                 }
-
+                if (RainAndSnow) {
+                    factorWeather = 10;
+                } else {
+                    factorWeather = 0;
+                }
                 // writeCheck is the boolean used above to indicate the change in counters in turn and acc
                 if (isWriteEnabled) {
 
@@ -1348,6 +1413,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                             // definitely unsafe
                             factorAcceleration = 10;
                             runOnUiThread(() -> {
+                                notificationService.sendNotification("Please be safe","Harsh acceleration has been detected", DrivePatternFragment.this);
                                 Snackbar.make(mainRelativeLayout, "Harsh acceleration has been detected, please be safe", Snackbar.LENGTH_SHORT).show();
                                 playSound();
                             });
@@ -1368,6 +1434,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                     } else {
                         if (isYAccelerationChanged) {
                             runOnUiThread(() -> {
+                                notificationService.sendNotification("Please be safe","Harsh unsafe turn has been detected", DrivePatternFragment.this);
                                 Snackbar.make(mainRelativeLayout, "Harsh unsafe turn has been detected, please be safe", Snackbar.LENGTH_SHORT).show();
                                 playSound();
                             });
@@ -1384,7 +1451,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 }
             }
 
-            double unsafeScore = 0.3 * factorSpeed + 0.2 * factorBrakes + 0.2 * factorAcceleration + 0.2 * factorTurn;
+            double unsafeScore = 0.3 * factorSpeed + 0.2 * factorBrakes +  0.2 * factorWeather + 0.2 * factorAcceleration + 0.2 * factorTurn;
             if (unsafeScore < 10) {
                 overallSafeScore = 10 - unsafeScore;
             }
