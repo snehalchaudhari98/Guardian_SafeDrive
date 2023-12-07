@@ -248,6 +248,7 @@ public class healthQuestions extends AppCompatActivity {
         userRef.child("healthSymptoms").setValue(healthSymptoms);
         userRef.child("specifiedHealthSymptoms").setValue(specifiedHealthSymptoms);
 
+
         // Inform the user that responses are stored successfully
         Toast.makeText(getApplicationContext(), "Responses stored successfully", Toast.LENGTH_SHORT).show();
     }
