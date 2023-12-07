@@ -1,24 +1,57 @@
-# Guardian SafeDrive (Branch: Shishir_ArchanaSrikanth)
+## Overview
 
-## Steps to demo Notification system
+## Usage Instructions
 
-### In-App Notifications
+### 1. Launching the App
 
-1. Run the Android application
-2. Navigate to DM- notifications tab by clicking on the menu icon
-3. Click on any of the first three buttons
-4. If Notification permissions aren't given to the application, you're prompted to give permission
-5. Clicking on any of the messages gives out a unique notification with a title, and body.
+-   Open the application on your Android device.
 
-### Firebase Cloud Messaging Notifications
+### 2. Select Driving Pattern Prediction
 
-1. Follow steps 1-3 as per previous section
-2. Click on any of the last two buttons
-3. First click of the button fires the FCM engine and triggers a push notification after about 30 seconds
-4. Every subsequent click of the last two buttons gives push notifications which are being triggered through the Firebase Cloud Messaging API v1.
+-   From the home page, open the navigation drawer.
+-   Select "Driving Pattern Prediction."
+-   ![WhatsApp Image 2023-11-30 at 22 10 01_853df098](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/4431a4f2-0550-426c-b393-ba7b83507e6b)
 
-### Screenshots
+### 3. Start a New Trip
 
-<img width="231" alt="image" src="https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/27198773/73a250cf-643b-4520-aa98-72e1651b0cab">
+-   Inside the "Driving Pattern Prediction" section, choose "New Trip."
+-   ![WhatsApp Image 2023-11-30 at 22 10 01_8f55cc1c](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/e31363d8-42c5-4abc-b588-0a6ae063e016)
 
-Receiver Token Example: fCCGg74BSEGecNP7TTAR6p:APA91bGoS2uOZtFkNlsT_RDkoiNvZpftzdeNUFyJRdy9qDYxP1MP_xnoVkrikOHZ7Q0MUcRakderqdQjqvXF-KVreeTpv33f2JJMZYE9DUTXSrHBq_zm2JgPPZn5gMzj-****\*****
+### 4. Locate Yourself
+
+-   Click on the center button located at the top right to automatically locate yourself on the map.
+-   ![WhatsApp Image 2023-11-30 at 22 10 00_1986aa98](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/4456a110-3f48-41b1-ad5e-303516f89510)
+
+### 5. Enter Destination Address
+
+-   Enter the destination address in the provided field.
+
+### 6. Search and Directions
+
+-   Select "Search and Directions" to find the best route to your destination.
+-   ![WhatsApp Image 2023-11-30 at 22 10 00_28d28b22](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/aca08251-9118-4504-b212-889f9156190e)
+
+### 7. Start Now
+
+-   Initiate your trip by clicking on "Start Now."
+-   The application will now monitor driving patterns, including speed, acceleration, brakes, turning angles.
+
+### 8. Monitoring Scores
+
+-   The score will update every 2 seconds, reflecting your driving behavior.
+-   Watch for notifications regarding over-speeding, hard acceleration, harsh brakes, and other driving patterns.
+-   ![WhatsApp Image 2023-11-30 at 22 10 00_50e3cb65](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/d1335a01-29a5-4e6e-b3f8-9ed1cab55110)
+
+### 9. End Trip
+
+-   When you reach your destination, click on "End" to conclude the trip.
+
+### 10. View Trip Summary
+
+-   The application will display the average score for the entire trip.
+-   ![WhatsApp Image 2023-11-30 at 22 10 00_570171d2](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/0e13c1e5-7447-46fa-b332-815615b6f1b6)
+
+### 11. Start New Destination
+
+-   Navigate back and start a new trip by selecting "Back" and choosing "New Destination."
+-   ![WhatsApp Image 2023-11-30 at 22 10 00_1203ac06](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/fe6f7cf9-e7fc-4eea-9087-85f75eb38958)

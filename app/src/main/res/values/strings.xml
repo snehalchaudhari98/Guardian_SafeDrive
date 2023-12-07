@@ -13,4 +13,5 @@
     <string name="menu_weatherp">DM- weather prediction</string>
     <string name="menu_drivingpattern">DM- driving pattern prediction</string>
     <string name="menu_notifications">DM- notifications</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>
