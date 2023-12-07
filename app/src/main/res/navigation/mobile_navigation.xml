@@ -41,4 +41,10 @@
         android:name="com.example.safedrive_guardian.ui.drivingpattern.DrivePatternFragment"
         android:label="@string/menu_drivingpattern"
         tools:layout="@layout/fragment_drive_pattern" />
+
+    <fragment
+        android:id="@+id/nav_notifications"
+        android:name="com.example.safedrive_guardian.ui.notifications.NotificationsFragment"
+        android:label="@string/menu_notifications"
+        tools:layout="@layout/fragment_notifications" />
 </navigation>
