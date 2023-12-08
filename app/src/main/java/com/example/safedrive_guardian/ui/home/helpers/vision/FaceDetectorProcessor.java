@@ -142,7 +142,7 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
             // Check if isDrowsy has been true 5 times within a minute
             if (drowsyCount >= 100 &&
                     System.currentTimeMillis() - getLastDrowsyTimestamp() <= 10 * 1000) {
-                notificationService.sendFCMMessage("Drowsy","You are Sleepy!! Take a Break!!", this.fcmToken);
+//                notificationService.sendFCMMessage("Drowsy","You are Sleepy!! Take a Break!!", this.fcmToken);
                 notificationService.sendNotification("Drowsy","You are Sleepy!! Take a Break!!", activity);
                 Log.d("Drowsiness", "Drowsiness detected 5 times in a minute!");
                 // Reset the count

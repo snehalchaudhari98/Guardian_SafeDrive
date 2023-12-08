@@ -288,7 +288,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
     private int mediumThreshold = 7;
     private int lowThreshold = 2;
     private String fcmToken = "";
-
+    int weather_count = 0;
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
     }
@@ -502,11 +502,11 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 averageScore = scoreArrayList.getAverage();
                 double result = Math.round(averageScore * 100) / 100.0;
                 if (result >= 5) {
-                    notificationService.sendFCMMessage("Good Driving", "Trip Score: " + result, this.fcmToken);
+//                    notificationService.sendFCMMessage("Good Driving", "Trip Score: " + result, this.fcmToken);
                     notificationService.sendNotification("Good Driving", "Trip Score: " + result, DrivePatternFragment.this);
                     Toast.makeText(getApplicationContext(), "Good Driving, Trip Score: " + result, Toast.LENGTH_LONG).show();
                 } else {
-                    notificationService.sendFCMMessage("Poor Driving", "Trip Score: " + result, this.fcmToken);
+//                    notificationService.sendFCMMessage("Poor Driving", "Trip Score: " + result, this.fcmToken);
                     notificationService.sendNotification("Poor Driving", "Trip Score: " + result, DrivePatternFragment.this);
                     Toast.makeText(getApplicationContext(), "Poor Driving, Trip Score: " + result, Toast.LENGTH_LONG).show();
                 }
@@ -904,18 +904,21 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                             JSONObject weatherObject = weatherArray.getJSONObject(0);
                             String icon = weatherObject.getString("icon");
                             RainAndSnow = icon.equals("10d") || icon.equals("13d");
-                            if (RainAndSnow) {
-                                runOnUiThread(() -> {
-                                    notificationService.sendNotification("Weather","The Weather is Rainy", DrivePatternFragment.this);
-                                    Snackbar.make(mainRelativeLayout, "The Weather is Rainy", Snackbar.LENGTH_SHORT).show();
-                                    playSound();
-                                });
-                            } else {
-                                runOnUiThread(() -> {
-                                    notificationService.sendNotification("Weather","The Weather is Sunny", DrivePatternFragment.this);
-                                    Snackbar.make(mainRelativeLayout, "The Weather is Sunny", Snackbar.LENGTH_SHORT).show();
-                                    playSound();
-                                });
+                            if (weather_count == 0) {
+                                if (RainAndSnow) {
+                                    runOnUiThread(() -> {
+                                        notificationService.sendNotification("Weather", "The Weather is Rainy", DrivePatternFragment.this);
+                                        Snackbar.make(mainRelativeLayout, "The Weather is Rainy", Snackbar.LENGTH_SHORT).show();
+                                        playSound();
+                                    });
+                                } else {
+                                    runOnUiThread(() -> {
+                                        notificationService.sendNotification("Weather", "The Weather is Sunny", DrivePatternFragment.this);
+                                        Snackbar.make(mainRelativeLayout, "The Weather is Sunny", Snackbar.LENGTH_SHORT).show();
+                                        playSound();
+                                    });
+                                }
+                                weather_count+=1;
                             }
                             Log.d("Icon", icon);
                         } catch (JSONException e) {
@@ -1495,7 +1498,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 if (currentSpeed > speedLimit) {
                     factorSpeed = 10;
                     runOnUiThread(() -> {
-                        notificationService.sendFCMMessage("You speed is above the limit","Please drive within the speedlimit", DrivePatternFragment.this.fcmToken);
+//                        notificationService.sendFCMMessage("You speed is above the limit","Please drive within the speedlimit", DrivePatternFragment.this.fcmToken);
                         notificationService.sendNotification("You speed is above the limit","Please drive within the speedlimit", DrivePatternFragment.this);
                         Snackbar.make(mainRelativeLayout, "You speed is above the limit, please drive within the speedlimit", Snackbar.LENGTH_SHORT).show();
                         playSound();
@@ -1507,7 +1510,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
                 if (areBrakesApplied) {
                     factorBrakes = 10;
                     runOnUiThread(() -> {
-                        notificationService.sendFCMMessage("Please be careful","You shouldn't apply sudden brakes", DrivePatternFragment.this.fcmToken);
+//                        notificationService.sendFCMMessage("Please be careful","You shouldn't apply sudden brakes", DrivePatternFragment.this.fcmToken);
                         notificationService.sendNotification("Please be careful","You shouldn't apply sudden brakes", DrivePatternFragment.this);
                         Snackbar.make(mainRelativeLayout, "You shouldn't apply sudden brakes, please be careful", Snackbar.LENGTH_SHORT).show();
                         playSound();
@@ -1760,7 +1763,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         locationRequest.setInterval(6000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         //        locationRequest.setFastestInterval(5000);
-        locationRequest.setFastestInterval(60000);
+        locationRequest.setFastestInterval(10000);
 
 
         locationCallback = new LocationCallback() {
