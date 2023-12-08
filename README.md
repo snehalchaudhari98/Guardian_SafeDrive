@@ -1,57 +1,50 @@
+# SafeDrive Guardian : Enhancing Driver Safety Through Context Aware Computing
+
 ## Overview
 
-## Usage Instructions
+The project aims to significantly improve road safety by using various mobile sensors to address a few critical aspects of driving like speed limitation in severe weather or close to public areas.
 
-### 1. Launching the App
+## Prerequisites
 
--   Open the application on your Android device.
+* Android Studio
+* Java Development Kit (JDK)
+* Google Maps API Key - Enable Places API (for the submission there is one ke alredy added so can skip this step.)
 
-### 2. Select Driving Pattern Prediction
+## How to excute
 
--   From the home page, open the navigation drawer.
--   Select "Driving Pattern Prediction."
--   ![WhatsApp Image 2023-11-30 at 22 10 01_853df098](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/4431a4f2-0550-426c-b393-ba7b83507e6b)
+* Build the Gradle
+* Accept installation on needed libraries
+* Run the application from Android Studio on emulator or physical device (SDK > 21)
+## Navigating Thorught the Application!
 
-### 3. Start a New Trip
+1. User need to sign up if not the account already doesn't exist. 
+   <img src="img/img2.png" width="200"/> <img src="img/img3.png" width="200" />
 
--   Inside the "Driving Pattern Prediction" section, choose "New Trip."
--   ![WhatsApp Image 2023-11-30 at 22 10 01_8f55cc1c](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/e31363d8-42c5-4abc-b588-0a6ae063e016)
+2. Dashboard will show the statistic of the last drive. 
+<img src="img/img9.png" width="200" />
 
-### 4. Locate Yourself
+3. User can monitor the facial features whil driving using the "Monitor Driver Drowsiness" on dashboard. Based on yawning, blinking "Drowsy" attribute will be true if the user is sleeping for 10 secs.
+<img src="img/img11.png" width="200" />
 
--   Click on the center button located at the top right to automatically locate yourself on the map.
--   ![WhatsApp Image 2023-11-30 at 22 10 00_1986aa98](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/4456a110-3f48-41b1-ad5e-303516f89510)
+4. Other feature is to monitor driving pattern, choose the option "Driving pattern prediction". This will show nearby public places like hospital, parks and public places in radius of 1 km. ( school - Blue , hospital - Violet and park - Yellow). Marker circle radius - 350m.
+<img src="img/img10.png" width="200" /> <img src="img/img4.png" width="200" /> 
 
-### 5. Enter Destination Address
+5. To start the drive, first search for the destination place in top bar. The to get the address on map click on "Search" button. To find the safe route to the destination, click on "Directions" button. Blue will indicate the ruote suggested by google routes and green path is one avoidding crime hotspot.
+<img src="img/img5.png" width="200" />
 
--   Enter the destination address in the provided field.
+6. To start the trip click on "START" button, and now user can monitor the speed and driving pattern. To end the trip, click on "END". This will end the trip and give driving score out of 10.
+To start anaother trip click on "Back" button.
+<img src="img/img6.png" width="200" />  <img src="img/img7.png" width="200" />
 
-### 6. Search and Directions
+7. Apart from main features, user preferenses can be update from the settings menu.
+<img src="img/img12.png" width="200" /> <img src="img/img1.png" width="200" />
 
--   Select "Search and Directions" to find the best route to your destination.
--   ![WhatsApp Image 2023-11-30 at 22 10 00_28d28b22](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/aca08251-9118-4504-b212-889f9156190e)
 
-### 7. Start Now
 
--   Initiate your trip by clicking on "Start Now."
--   The application will now monitor driving patterns, including speed, acceleration, brakes, turning angles.
+## Notes:
 
-### 8. Monitoring Scores
-
--   The score will update every 2 seconds, reflecting your driving behavior.
--   Watch for notifications regarding over-speeding, hard acceleration, harsh brakes, and other driving patterns.
--   ![WhatsApp Image 2023-11-30 at 22 10 00_50e3cb65](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/d1335a01-29a5-4e6e-b3f8-9ed1cab55110)
-
-### 9. End Trip
-
--   When you reach your destination, click on "End" to conclude the trip.
-
-### 10. View Trip Summary
-
--   The application will display the average score for the entire trip.
--   ![WhatsApp Image 2023-11-30 at 22 10 00_570171d2](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/0e13c1e5-7447-46fa-b332-815615b6f1b6)
-
-### 11. Start New Destination
-
--   Navigate back and start a new trip by selecting "Back" and choosing "New Destination."
--   ![WhatsApp Image 2023-11-30 at 22 10 00_1203ac06](https://github.com/snehalchaudhari98/Guardian_SafeDrive/assets/133533611/fe6f7cf9-e7fc-4eea-9087-85f75eb38958)
+* For better usibility use the block address than tha name while searching for the place
+* Make sure the internet connection is on and location permissions are granted.
+* To add user preferences, go to setting from top right bar and make changes.
+* Realtime Firebase database configurations:
+<img src="img/img_fb2.png" width="600" /> 
