@@ -28,9 +28,9 @@
             android:icon="@drawable/nav_drivingpattern"
             android:title="@string/menu_drivingpattern" />
 
-        <item
-            android:id="@+id/nav_notifications"
-            android:icon="@drawable/nav_notifications"
-            android:title="@string/menu_notifications" />
+<!--        <item-->
+<!--            android:id="@+id/nav_notifications"-->
+<!--            android:icon="@drawable/nav_notifications"-->
+<!--            android:title="@string/menu_notifications" />-->
     </group>
 </menu>

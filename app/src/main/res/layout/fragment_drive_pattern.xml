@@ -125,7 +125,7 @@ tools:context=".ui.drivingpattern.DrivePatternFragment">
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="@android:color/background_light"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:visibility="gone" />
 
     <TextView
@@ -140,7 +140,7 @@ tools:context=".ui.drivingpattern.DrivePatternFragment">
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="@android:color/background_light"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:visibility="gone" />
 
 
