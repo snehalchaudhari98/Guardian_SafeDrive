@@ -28,6 +28,13 @@ import com.example.safedrive_guardian.ui.drivingpattern.DrivePatternFragment;
 import com.example.safedrive_guardian.ui.home.HomeFragment;
 import com.example.safedrive_guardian.ui.home.object.DriverDrowsinessDetectionActivity;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
 import com.google.mlkit.vision.face.FaceDetection;
@@ -51,6 +58,16 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
     private final HashMap<Integer, FaceDrowsiness> drowsinessHashMap = new HashMap<>();
     private int drowsyCount;
     private long lastDrowsyTimestamp;
+
+    private String fcmToken = "";
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    private DatabaseReference databaseReference;
+    private FirebaseAuth mAuth;
+
     public FaceDetectorProcessor(Context context, Activity activity) {
         super(context);
         this.activity = activity;
@@ -63,6 +80,31 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
                 .build();
         Log.v(MANUAL_TESTING_LOG, "Face detector options: " + faceDetectorOptions);
         detector = FaceDetection.getClient(faceDetectorOptions);
+
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        String uid = currentUser.getUid();
+
+        // Reference to the user's data in the database
+        DatabaseReference userRef = databaseReference.child("users").child(uid);
+
+        userRef.child("fcmtoken").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String fcmtoken = dataSnapshot.getValue(String.class);
+                    FaceDetectorProcessor.this.setFcmToken(fcmToken);
+                    Log.d("FCM Token", "Token: " + fcmtoken);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle any errors that might occur
+                Log.w("FCM Token", "Error fetching token", databaseError.toException());
+            }
+        });
     }
 
     @Override
@@ -100,6 +142,7 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
             // Check if isDrowsy has been true 5 times within a minute
             if (drowsyCount >= 100 &&
                     System.currentTimeMillis() - getLastDrowsyTimestamp() <= 10 * 1000) {
+                notificationService.sendFCMMessage("Drowsy","You are Sleepy!! Take a Break!!", this.fcmToken);
                 notificationService.sendNotification("Drowsy","You are Sleepy!! Take a Break!!", activity);
                 Log.d("Drowsiness", "Drowsiness detected 5 times in a minute!");
                 // Reset the count
