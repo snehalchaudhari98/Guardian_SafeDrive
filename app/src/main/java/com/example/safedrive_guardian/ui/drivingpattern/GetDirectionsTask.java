@@ -180,15 +180,12 @@ public class GetDirectionsTask extends AsyncTask<LatLng, Void, String>{
     protected String doInBackground(LatLng... params) {
         LatLng startAddress = params[0];
         LatLng endAddress = params[1];
-//        return "https://maps.googleapis.com/maps/api/directions/json?" + "origin=" + lat + "," + lng +
-//                "&destination=" + endLat + "," + endLng +
-//                "&key=" + "AIzaSyBJ7iTZYsaNhmO9NvvCQvv6xcxyBLXd054";
         try {
             // Construct the URL for the Directions API
             String apiUrl = "https://maps.googleapis.com/maps/api/directions/json" +
                     "?origin=" + startAddress.latitude + "," + startAddress.longitude +
                     "&destination=" + endAddress.latitude + "," + endAddress.longitude +
-                    "&key=AIzaSyDiFPvdgShaacPmuEQywoxHxXRrhDvMioU";
+                    "&key="+ADD_KEY;
 
             // Make the API request and get the JSON response
             URL url = new URL(apiUrl);
@@ -264,7 +261,7 @@ public class GetDirectionsTask extends AsyncTask<LatLng, Void, String>{
             // Construct the URL for the Geocoding API
             String geocodingUrl = "https://maps.googleapis.com/maps/api/geocode/json" +
                     "?address=" + address +
-                    "&key=AIzaSyDiFPvdgShaacPmuEQywoxHxXRrhDvMioU";
+                    "&key="+ADD_KEY;
             Log.d("parseHotspotsFromApiResponse", "geocodingUrl = "+geocodingUrl);
 
             // Make the Geocoding API request and get the JSON response
@@ -308,7 +305,7 @@ public class GetDirectionsTask extends AsyncTask<LatLng, Void, String>{
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("x-api-key", "k3RAzKN1Ag14xTPlculT39RZb38LGgsG8n27ZycG");
+            connection.setRequestProperty("x-api-key", "ADD KEY HERE");
 
             int status = connection.getResponseCode();
             InputStream inputStream;
@@ -563,7 +560,7 @@ public class GetDirectionsTask extends AsyncTask<LatLng, Void, String>{
             String apiUrl = "https://api.tomtom.com/routing/1/calculateRoute/"
                     + startLatLng.latitude + "%2C" + startLatLng.longitude
                     + "%3A" + endLatLng.latitude + "%2C" + endLatLng.longitude
-                    + "/json?key=0ty2G1E8ab4W62QfLCMAHDGIWXnDLvIA";
+                    + "/json?key="+ADD_KEY;
 
             new SendPostRequestTask().execute(apiUrl, parentJsonObject.toString());
         }

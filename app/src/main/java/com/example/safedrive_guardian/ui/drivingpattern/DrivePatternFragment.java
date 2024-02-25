@@ -814,7 +814,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
 
         return "https://maps.googleapis.com/maps/api/directions/json?" + "origin=" + lat + "," + lng +
                 "&destination=" + endLat + "," + endLng +
-                "&key=" + "AIzaSyBJ7iTZYsaNhmO9NvvCQvv6xcxyBLXd054";
+                "&key=" + "ADD_KEY";
     }
 
     private String getUrl(double latitude, double longitude, String nearbyPlace) {
@@ -823,7 +823,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
         googlePlacesUrl.append("&radius=").append(PROXIMITY_RADIUS);
         googlePlacesUrl.append("&type=").append(nearbyPlace);
         googlePlacesUrl.append("&sensor=true");
-        googlePlacesUrl.append("&key=" + "AIzaSyBJ7iTZYsaNhmO9NvvCQvv6xcxyBLXd054>");
+        googlePlacesUrl.append("&key=" + "ADD_KEY>");
         Log.d("getUrl", googlePlacesUrl.toString());
         return (googlePlacesUrl.toString());
     }
@@ -888,7 +888,7 @@ public class DrivePatternFragment extends FragmentActivity implements OnMapReady
 
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        String apiKey = "ee87a5fce22b560ffb1c20b877e78ced";
+        String apiKey = "API KEY;
         String apiUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + location.getLatitude() + "&lon=" + location.getLongitude() + "&appid=" + apiKey;
 
         // Create a JsonObjectRequest

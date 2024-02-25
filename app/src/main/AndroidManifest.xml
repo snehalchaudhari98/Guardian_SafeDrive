@@ -91,7 +91,7 @@
         </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBJ7iTZYsaNhmO9NvvCQvv6xcxyBLXd054" />
+            android:value="ADD_KEY" />
         <activity
             android:name=".healthQuestions"
             android:exported="false" />
